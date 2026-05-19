@@ -131,7 +131,10 @@ const en: Translations = {
     ],
     message: 'Your message',
     submit: 'Send feedback',
+    submitting: 'Sending…',
     success: 'Thank you — your message has been sent.',
+    error:
+      'Something went wrong. Please try again, or email salam@zikrapps.com directly.',
     privacy: 'We use your email only to reply. No mailing lists.',
     disclaimer: {
       title: 'A note on authenticity',

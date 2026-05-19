@@ -216,19 +216,49 @@ Set `GITHUB_BASE` as a Worker secret to your `PUBLIC_APK_BASE_URL`, bind the Wor
 
 ## Phase 6 · Wire up the contact form (15 min)
 
-The form currently posts to whatever `PUBLIC_FORM_ENDPOINT` is set to. Pick a provider:
+The contact form uses **Formspree** (50 submissions/month free). Submissions arrive in the Gmail inbox you configure (use `salam@zikrapps.com` or `contact@zikrapps.com`).
 
-| Provider | Free tier | Best for |
-|---|---|---|
-| **Formspree** | 50 submissions/mo | Quickest setup |
-| **Web3Forms** | unlimited (with ads in their dashboard) | Higher volume, free |
-| Brevo / Sendinblue | 300/day | If you also want newsletters later |
+### Step 1 — Create the Formspree form
 
-1. Sign up for the provider **using `salam@zikrapps.com`** (consistency: every third-party account on the brand's domain). Point the form to deliver to `contact@zikrapps.com` (now active in Phase 1).
-2. Grab the endpoint URL (e.g. `https://formspree.io/f/xyzabc`).
-3. In Cloudflare Pages → Environment variables, set `PUBLIC_FORM_ENDPOINT` to that URL.
-4. Redeploy.
-5. Submit a test message from `/contact`; verify it lands in your Gmail.
+1. Go to [formspree.io](https://formspree.io) → **Get started** (sign up with **`salam@zikrapps.com`**).
+2. **+ New form** → name it e.g. `Zikr Apps — Contact`.
+3. Set **Send submissions to** → `salam@zikrapps.com` (or `contact@` if you added that alias in Workspace).
+4. Confirm the verification email Formspree sends to that inbox.
+5. Open the form → copy the **endpoint URL**, e.g. `https://formspree.io/f/abcxyzmn`.
+
+Optional in Formspree dashboard:
+- Enable **reCAPTCHA** or spam filtering if you get junk mail later.
+- Set a custom **subject line** template (the site already sends `_subject` like `Zikr Apps feedback — tazkirah`).
+
+### Step 2 — Add the URL to the repo
+
+Edit `src/lib/form-endpoint.ts` and replace `REPLACE_ME` with your real form id:
+
+```ts
+const FORMSPREE_FALLBACK = 'https://formspree.io/f/abcxyzmn';
+```
+
+Commit and push to `main` (Cloudflare redeploys automatically):
+
+```bash
+git add src/lib/form-endpoint.ts
+git commit -m "Enable contact form via Formspree"
+git push origin main
+```
+
+> **Why not only Cloudflare dashboard variables?** Same as APK URLs: Worker **Variables and secrets** are runtime-only and do not reach `npm run build`, so the form `action` would stay empty. The committed fallback in `form-endpoint.ts` is the reliable approach.
+
+Optional override without editing code: set `PUBLIC_FORM_ENDPOINT` in **Settings → Build → Build configuration → Environment variables** (build-time), if your Cloudflare UI exposes it.
+
+### Step 3 — Test
+
+1. Wait for the deploy to finish.
+2. Open **https://zikrapps.com/contact** (and `/ar/contact`, `/ur/contact` if you like).
+3. Submit a short test message.
+4. Check **`salam@zikrapps.com`** Gmail — you should see the submission within a minute.
+5. On the site you should see the green success message; the form clears.
+
+If it fails, open the browser **Developer tools → Network** tab, submit again, and check the POST to `formspree.io` (status should be `200`).
 
 ✅ Phase 6 done.
 

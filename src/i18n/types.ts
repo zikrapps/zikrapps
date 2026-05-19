@@ -83,7 +83,9 @@ export interface Translations {
     appOptions: { value: string; label: string }[];
     message: string;
     submit: string;
+    submitting: string;
     success: string;
+    error: string;
     privacy: string;
     disclaimer: {
       title: string;

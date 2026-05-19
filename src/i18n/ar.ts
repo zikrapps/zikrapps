@@ -129,7 +129,10 @@ const ar: Translations = {
     ],
     message: 'رسالتك',
     submit: 'إرسال الملاحظات',
+    submitting: 'جارٍ الإرسال…',
     success: 'شكراً — تم إرسال رسالتك.',
+    error:
+      'حدث خطأ. يُرجى المحاولة مرة أخرى، أو مراسلتنا مباشرة على salam@zikrapps.com.',
     privacy: 'نستخدم بريدك للرد فقط. لا قوائم بريدية.',
     disclaimer: {
       title: 'تنبيه بشأن التحقق من الصحة',

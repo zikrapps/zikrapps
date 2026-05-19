@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { Locale } from '../../i18n';
 import { getTranslations } from '../../i18n';
+import { FORM_ENDPOINT, isFormConfigured } from '../../lib/form-endpoint';
 
 interface Props {
   locale: Locale;
@@ -9,7 +10,7 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = getTranslations(locale);
-const formEndpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '';
+const formAction = isFormConfigured ? FORM_ENDPOINT : undefined;
 ---
 
 <BaseLayout locale={locale} t={t} title={t.contact.title} description={t.contact.subtitle}>
@@ -47,12 +48,33 @@ const formEndpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '';
         </div>
       </aside>
 
-      <form class="contact-form mt-10 space-y-5" method="POST" action={formEndpoint || undefined} data-form>
-        {!formEndpoint && (
-          <p class="rounded-lg border border-gold/40 bg-gold/10 px-4 py-3 text-sm text-forest/80">
-            Set <code class="text-xs">PUBLIC_FORM_ENDPOINT</code> in <code class="text-xs">.env</code> (Formspree or Web3Forms) to enable submissions.
-          </p>
-        )}
+      <form
+        class="contact-form mt-10 space-y-5"
+        method="POST"
+        action={formAction}
+        data-form
+        data-submit-label={t.contact.submit}
+        data-submitting-label={t.contact.submitting}
+      >
+        {
+          import.meta.env.DEV && !isFormConfigured && (
+            <p class="rounded-lg border border-gold/40 bg-gold/10 px-4 py-3 text-sm text-forest/80">
+              Form not configured — set your Formspree URL in{' '}
+              <code class="text-xs">src/lib/form-endpoint.ts</code> or{' '}
+              <code class="text-xs">PUBLIC_FORM_ENDPOINT</code> in <code class="text-xs">.env</code>.
+            </p>
+          )
+        }
+
+        {/* Honeypot — hidden from users, bots fill it */}
+        <input
+          type="text"
+          name="_gotcha"
+          tabindex="-1"
+          autocomplete="off"
+          class="absolute -left-[9999px] h-0 w-0 opacity-0"
+          aria-hidden="true"
+        />
 
         <div>
           <label for="name" class="mb-1 block text-sm font-medium text-forest">{t.contact.name}</label>
@@ -104,33 +126,76 @@ const formEndpoint = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '';
 
         <button
           type="submit"
-          class="w-full rounded-lg bg-forest px-6 py-4 text-sm font-semibold text-cream transition-colors hover:bg-forest-deep sm:w-auto"
+          class="w-full rounded-lg bg-forest px-6 py-4 text-sm font-semibold text-cream transition-colors hover:bg-forest-deep disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+          disabled={!isFormConfigured}
         >
           {t.contact.submit}
         </button>
 
         <p class="text-xs text-forest/60">{t.contact.privacy}</p>
-        <p class="hidden text-sm text-forest" data-success>{t.contact.success}</p>
+        <p class="hidden rounded-lg border border-forest/20 bg-forest/5 px-4 py-3 text-sm text-forest" data-success role="status">
+          {t.contact.success}
+        </p>
+        <p class="hidden rounded-lg border border-red-300/50 bg-red-50 px-4 py-3 text-sm text-red-900" data-error role="alert">
+          {t.contact.error}
+        </p>
       </form>
     </div>
   </section>
 </BaseLayout>
 
 <script>
-  const form = document.querySelector('[data-form]');
-  form?.addEventListener('submit', async (e) => {
+  const form = document.querySelector<HTMLFormElement>('[data-form]');
+  if (!form) throw new Error('Contact form not found');
+
+  const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+  const successEl = form.querySelector('[data-success]');
+  const errorEl = form.querySelector('[data-error]');
+  const submitLabel = form.dataset.submitLabel ?? 'Send';
+  const submittingLabel = form.dataset.submittingLabel ?? 'Sending…';
+
+  form.addEventListener('submit', async (e) => {
     const action = form.getAttribute('action');
     if (!action) {
       e.preventDefault();
-      alert('Form endpoint not configured yet.');
       return;
     }
+
     e.preventDefault();
+    errorEl?.classList.add('hidden');
+    successEl?.classList.add('hidden');
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = submittingLabel;
+    }
+
     const data = new FormData(form);
-    const res = await fetch(action, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
-    if (res.ok) {
+    const app = data.get('app') ?? 'general';
+    data.set('_subject', `Zikr Apps feedback — ${app}`);
+
+    try {
+      const res = await fetch(action, {
+        method: 'POST',
+        body: data,
+        headers: { Accept: 'application/json' },
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        console.error('Form submission failed', res.status, body);
+        throw new Error('submit failed');
+      }
+
       form.reset();
-      form.querySelector('[data-success]')?.classList.remove('hidden');
+      successEl?.classList.remove('hidden');
+    } catch {
+      errorEl?.classList.remove('hidden');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = submitLabel;
+      }
     }
   });
 </script>
