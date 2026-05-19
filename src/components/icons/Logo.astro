@@ -1,0 +1,28 @@
+---
+interface Props {
+  class?: string;
+  /** "primary" = forest green strokes (for cream backgrounds).
+   *  "reversed" = cream strokes (for forest/dark backgrounds). */
+  variant?: 'primary' | 'reversed';
+  alt?: string;
+}
+const {
+  class: className = 'h-9 w-auto',
+  variant = 'primary',
+  alt = 'Zikr Apps',
+} = Astro.props;
+
+const src =
+  variant === 'reversed'
+    ? '/images/brand/zikr-mark-reversed.png'
+    : '/images/brand/zikr-mark-primary.png';
+---
+<img
+  src={src}
+  alt={alt}
+  width="355"
+  height="354"
+  class={className}
+  loading="eager"
+  decoding="async"
+/>

@@ -1,0 +1,56 @@
+---
+import type { Locale, Translations } from '../i18n';
+import { contactPath, homePath } from '../lib/paths';
+import Logo from './icons/Logo.astro';
+import Wordmark from './icons/Wordmark.astro';
+
+interface Props {
+  locale: Locale;
+  t: Translations;
+}
+
+const { locale, t } = Astro.props;
+---
+
+<footer class="relative overflow-hidden border-t border-forest/10 bg-forest text-cream">
+  <div class="relative mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+    <div class="flex flex-col items-center gap-6 text-center md:flex-row md:justify-between md:text-start">
+      <a href={homePath(locale)} class="flex items-center gap-2.5">
+        <Logo class="h-10 w-auto" variant="reversed" />
+        <Wordmark
+          locale={locale}
+          brand={t.nav.brand}
+          size="lg"
+          accentClass="text-gold-light"
+          baseClass="text-cream"
+        />
+      </a>
+      <p class="max-w-md text-sm text-cream/80">{t.footer.tagline}</p>
+      <a
+        href={contactPath(locale)}
+        class="rounded-full border border-cream/30 px-5 py-2 text-sm font-medium transition-colors hover:bg-cream/10"
+      >
+        {t.nav.contact}
+      </a>
+    </div>
+    <div
+      class="mt-10 flex items-start gap-3 rounded-xl border border-gold/30 bg-forest-deep/40 px-4 py-3 text-start text-xs leading-relaxed text-cream/80"
+      role="note"
+    >
+      <svg
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        class="mt-0.5 h-4 w-4 flex-none text-gold-light"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M10 1.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17ZM9 6a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V6Zm1 7.25a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+      <p>{t.footer.disclaimer}</p>
+    </div>
+    <p class="mt-6 text-center text-xs text-cream/50">{t.footer.rights}</p>
+  </div>
+</footer>

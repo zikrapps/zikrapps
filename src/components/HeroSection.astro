@@ -1,0 +1,49 @@
+---
+import type { Translations } from '../i18n';
+import PhoneFrame from './PhoneFrame.astro';
+
+interface Props {
+  t: Translations;
+}
+
+const { t } = Astro.props;
+---
+
+<section class="mashrabiya relative overflow-hidden">
+  <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-2 lg:py-20">
+    <div class="order-2 lg:order-1">
+      <p class="mb-3 text-[11px] font-medium tracking-[0.25em] text-forest/60 uppercase">{t.home.appsEyebrow}</p>
+      <h1 class="font-serif text-4xl leading-tight font-semibold text-forest sm:text-5xl lg:text-[3.25rem]">
+        {t.hero.title}
+        <span class="text-gold">{t.hero.titleAccent}</span>
+      </h1>
+      <p class="mt-5 max-w-lg text-base leading-relaxed text-forest/80">{t.hero.description}</p>
+      <a
+        href="#apps"
+        class="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-forest px-6 py-4 text-sm font-semibold text-cream transition-colors hover:bg-forest-deep sm:w-auto"
+      >
+        {t.hero.cta}
+        <span aria-hidden="true">→</span>
+      </a>
+    </div>
+    <div class="order-1 flex justify-center lg:order-2 lg:justify-end">
+      <PhoneFrame variant="light" class="lg:-me-8">
+        <div class="flex h-full flex-col text-forest">
+          <p class="text-[10px] tracking-widest text-forest/50 uppercase">Fajr · 04:48</p>
+          <p class="mt-6 font-serif text-lg leading-snug">Remember Allah in the morning and the evening.</p>
+          <ul class="mt-auto space-y-2 text-xs text-forest/70">
+            <li class="flex justify-between border-b border-forest/10 py-2">
+              <span>Duʿā after Fajr</span>
+              <span class="text-gold">✓</span>
+            </li>
+            <li class="flex justify-between border-b border-forest/10 py-2">
+              <span>Surah al-Kahf</span>
+              <span class="text-forest/40">Fri</span>
+            </li>
+          </ul>
+        </div>
+      </PhoneFrame>
+    </div>
+  </div>
+  <div class="relative z-[2] h-16 bg-gradient-to-b from-cream/0 via-cream/80 to-forest sm:h-24" aria-hidden="true"></div>
+</section>

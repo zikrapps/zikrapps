@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AppDetailPage from '../AppDetailPage.astro';
+import type { Locale } from '../../i18n';
+import { getTranslations } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+  slug: 'tazkirah' | 'misbaha' | 'mehrab';
+}
+
+const { locale, slug } = Astro.props;
+const t = getTranslations(locale);
+const app = t.apps[slug];
+---
+
+<BaseLayout locale={locale} t={t} title={app.name} description={app.description}>
+  <AppDetailPage slug={slug} app={app} t={t} locale={locale} screenshotPrefix={slug} />
+</BaseLayout>

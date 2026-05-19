@@ -1,0 +1,60 @@
+---
+import type { Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+  brand: string;
+  size?: 'sm' | 'md' | 'lg';
+  accent?: boolean;
+  /** Color of the accent half (defaults to gold) */
+  accentClass?: string;
+  baseClass?: string;
+}
+
+const {
+  locale,
+  brand,
+  size = 'md',
+  accent = true,
+  accentClass = 'text-gold',
+  baseClass = '',
+} = Astro.props;
+
+const sizeClass = {
+  sm: 'text-base',
+  md: 'text-lg',
+  lg: 'text-xl sm:text-2xl',
+}[size];
+
+const parts: { text: string; accent: boolean }[] = (() => {
+  if (!accent) return [{ text: brand, accent: false }];
+  if (locale === 'en') {
+    const idx = brand.lastIndexOf(' ');
+    if (idx > 0) {
+      return [
+        { text: brand.slice(0, idx), accent: false },
+        { text: brand.slice(idx + 1), accent: true },
+      ];
+    }
+    return [{ text: brand, accent: false }];
+  }
+  // Arabic / Urdu: accent the first word (which is the "Apps" equivalent in source order)
+  const idx = brand.indexOf(' ');
+  if (idx > 0) {
+    return [
+      { text: brand.slice(0, idx), accent: true },
+      { text: brand.slice(idx), accent: false },
+    ];
+  }
+  return [{ text: brand, accent: false }];
+})();
+---
+
+<span class:list={['font-serif font-semibold tracking-tight', sizeClass, baseClass]}>
+  {parts.map((p, i) => (
+    <>
+      {i > 0 && ' '}
+      <span class:list={[p.accent && ['italic font-medium', accentClass]]}>{p.text}</span>
+    </>
+  ))}
+</span>

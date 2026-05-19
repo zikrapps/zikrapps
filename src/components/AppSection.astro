@@ -1,0 +1,148 @@
+---
+import type { AppContent, Translations } from '../i18n';
+import type { Locale } from '../i18n';
+import { appPath } from '../lib/paths';
+import { getAppScreenshots, getDemoVideoSrc } from '../lib/app-media';
+import PhoneFrame from './PhoneFrame.astro';
+import AppScreenshot from './AppScreenshot.astro';
+import VideoModal from './VideoModal.astro';
+import StoreBadges from './StoreBadges.astro';
+import ApkDownload from './ApkDownload.astro';
+
+interface Props {
+  slug: 'tazkirah' | 'misbaha' | 'mehrab';
+  app: AppContent;
+  t: Translations;
+  locale: Locale;
+  reversed?: boolean;
+  screenshotPrefix: string;
+}
+
+const { slug, app, t, locale, reversed = false, screenshotPrefix } = Astro.props;
+const screenshots = getAppScreenshots(slug);
+const useRealScreenshots = screenshots.length > 0;
+const videoSrc = getDemoVideoSrc(slug);
+const isBeta = app.status === 'beta';
+const isDark = reversed;
+const sectionBg = isDark ? 'bg-forest text-cream' : 'bg-cream text-forest';
+const textMuted = isDark ? 'text-cream/80' : 'text-forest/80';
+---
+
+<section
+  id={slug}
+  class:list={['scroll-mt-20 py-16 sm:py-24', sectionBg, !isDark && 'mashrabiya']}
+>
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div
+      class:list={[
+        'grid items-center gap-10 lg:grid-cols-2 lg:gap-16',
+        reversed && 'lg:[&>*:first-child]:order-2',
+      ]}
+    >
+      <div>
+        <span
+          class:list={[
+            'mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase shadow-sm',
+            isBeta
+              ? isDark
+                ? 'bg-gold text-forest'
+                : 'bg-forest text-cream'
+              : 'bg-gold text-forest ring-1 ring-gold/40',
+          ]}
+        >
+          {!isBeta && (
+            <span class="relative flex h-1.5 w-1.5">
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-forest/50 opacity-75"></span>
+              <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-forest"></span>
+            </span>
+          )}
+          {isBeta ? t.home.inBeta : t.home.inDevelopment}
+        </span>
+        <h2 class="font-serif text-4xl font-semibold sm:text-5xl">{app.name}</h2>
+        <p class:list={['mt-1 text-lg font-medium', isDark ? 'text-gold' : 'text-gold']}>{app.tagline}</p>
+        <p class:list={['mt-4 max-w-lg leading-relaxed', textMuted]}>{app.description}</p>
+        <ul class:list={['mt-6 space-y-2 text-sm', textMuted]}>
+          {app.features.map((f) => (
+            <li class="flex gap-2">
+              <span class={isDark ? 'text-gold' : 'text-forest'} aria-hidden="true">◆</span>
+              {f}
+            </li>
+          ))}
+        </ul>
+
+        <div class="mt-8 flex flex-col gap-4">
+          {isBeta && app.apkFilename && (
+            <ApkDownload filename={app.apkFilename} label={t.home.downloadApk} prominent />
+          )}
+          {isBeta && (
+            <StoreBadges
+              appStoreUrl={app.appStoreUrl}
+              playStoreUrl={app.playStoreUrl}
+              appStoreLabel={t.home.appStore}
+              playStoreLabel={t.home.playStore}
+            />
+          )}
+        </div>
+
+        <a
+          href={appPath(slug, locale)}
+          class:list={[
+            'mt-6 inline-flex items-center gap-1 text-sm font-semibold underline-offset-4 hover:underline',
+            isDark ? 'text-gold' : 'text-forest',
+          ]}
+        >
+          {t.home.learnMore}
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <div class="relative flex flex-wrap items-end justify-center gap-4 sm:gap-6">
+        {
+          useRealScreenshots ? (
+            <>
+              <AppScreenshot
+                src={screenshots[0].src}
+                alt={screenshots[0].alt}
+                class="rotate-[-3deg] sm:mb-8"
+              />
+              {screenshots[1] && (
+                <AppScreenshot
+                  src={screenshots[1].src}
+                  alt={screenshots[1].alt}
+                  class="hidden rotate-[2deg] sm:block"
+                />
+              )}
+            </>
+          ) : (
+            <>
+              <PhoneFrame
+                image={`/images/apps/${screenshotPrefix}-1.svg`}
+                alt={`${app.name} screenshot 1`}
+                variant={isDark ? 'dark' : 'light'}
+                class="rotate-[-4deg] sm:mb-8"
+              />
+              <PhoneFrame
+                image={`/images/apps/${screenshotPrefix}-2.svg`}
+                alt={`${app.name} screenshot 2`}
+                variant={isDark ? 'dark' : 'light'}
+                class="hidden rotate-[3deg] sm:block"
+              />
+            </>
+          )
+        }
+        {
+          videoSrc && (
+            <VideoModal
+              videoSrc={videoSrc}
+              label={t.home.watchDemo}
+              closeLabel={t.home.closeVideo}
+              variant="play-button"
+              surface={isDark ? 'dark' : 'light'}
+              class="absolute"
+            />
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>

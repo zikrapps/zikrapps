@@ -1,0 +1,37 @@
+---
+interface Props {
+  appStoreUrl?: string;
+  playStoreUrl?: string;
+  appStoreLabel: string;
+  playStoreLabel: string;
+}
+
+const { appStoreUrl, playStoreUrl, appStoreLabel, playStoreLabel } = Astro.props;
+---
+
+<div class="flex flex-wrap items-center gap-3">
+  {
+    appStoreUrl && appStoreUrl !== '#' && (
+      <a
+        href={appStoreUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex h-11 items-center rounded-lg bg-forest px-4 text-xs font-medium text-cream transition-opacity hover:opacity-90"
+      >
+        {appStoreLabel}
+      </a>
+    )
+  }
+  {
+    playStoreUrl && playStoreUrl !== '#' && (
+      <a
+        href={playStoreUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex h-11 items-center rounded-lg border-2 border-forest bg-transparent px-4 text-xs font-medium text-forest transition-colors hover:bg-forest hover:text-cream"
+      >
+        {playStoreLabel}
+      </a>
+    )
+  }
+</div>

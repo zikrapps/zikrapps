@@ -1,0 +1,50 @@
+---
+import '../styles/global.css';
+import type { Locale, Translations } from '../i18n';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  locale: Locale;
+  t: Translations;
+  title?: string;
+  description?: string;
+}
+
+const { locale, t, title, description } = Astro.props;
+const pageTitle = title ? `${title} · ${t.meta.siteTitle}` : t.meta.siteTitle;
+const pageDescription = description ?? t.meta.siteDescription;
+const dir = locale === 'en' ? 'ltr' : 'rtl';
+const lang = locale === 'ur' ? 'ur' : locale === 'ar' ? 'ar' : 'en';
+---
+
+<!doctype html>
+<html lang={lang} dir={dir}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={pageDescription} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/images/brand/zikr-apps-logo.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="/images/brand/zikr-apps-logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&family=Noto+Sans+Arabic:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>{pageTitle}</title>
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <Header locale={locale} t={t} />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer locale={locale} t={t} />
+  </body>
+</html>

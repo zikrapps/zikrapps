@@ -1,0 +1,21 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  class?: string;
+}
+
+const { src, alt, class: className = '' } = Astro.props;
+---
+
+<div class:list={['mx-auto w-[min(100%,240px)]', className]}>
+  <img
+    src={src}
+    alt={alt}
+    width={470}
+    height={1024}
+    class="w-full rounded-[1.75rem] shadow-2xl shadow-black/25 ring-1 ring-cream/10"
+    loading="lazy"
+    decoding="async"
+  />
+</div>

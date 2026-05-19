@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HeroSection from '../HeroSection.astro';
+import AppSection from '../AppSection.astro';
+import type { Locale } from '../../i18n';
+import { getTranslations } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getTranslations(locale);
+---
+
+<BaseLayout locale={locale} t={t}>
+  <HeroSection t={t} />
+  <div id="apps">
+    <AppSection slug="tazkirah" app={t.apps.tazkirah} t={t} locale={locale} screenshotPrefix="tazkirah" />
+    <AppSection slug="misbaha" app={t.apps.misbaha} t={t} locale={locale} reversed screenshotPrefix="misbaha" />
+    <AppSection slug="mehrab" app={t.apps.mehrab} t={t} locale={locale} screenshotPrefix="mehrab" />
+  </div>
+</BaseLayout>

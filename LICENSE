@@ -1,0 +1,50 @@
+Copyright © 2026 Zikr Apps. All rights reserved.
+
+This repository and its contents — including but not limited to source code,
+HTML/CSS/JS, design assets, logos, brand marks, photographs, illustrations,
+screenshots, copy, translations, and the names "Zikr Apps", "Tazkirah",
+"Misbaha", and "Mehrab" as used herein — are the proprietary property of
+Zikr Apps.
+
+The source is published publicly for transparency, reference, and to enable
+contributions from collaborators we explicitly invite. Public visibility does
+NOT grant a license to use, copy, modify, distribute, sublicense, or create
+derivative works based on the contents of this repository, in whole or in
+part, for any purpose other than viewing.
+
+Permitted, without prior written permission:
+
+  - Viewing the source code in this repository on GitHub.
+  - Cloning the repository locally for the sole purpose of reading or
+    reviewing the code.
+  - Reporting bugs, accessibility issues, or security concerns via the
+    project's issue tracker or the security contact listed in SECURITY.md.
+
+Not permitted, without prior written permission from Zikr Apps:
+
+  - Redistributing or republishing the source code or assets, in original
+    or modified form, on any other website, service, or repository.
+  - Using any portion of the design, brand marks, screenshots, illustrations,
+    or app copy in your own products, marketing materials, or projects.
+  - Creating "white-label" forks or rebranded copies of the site.
+  - Training machine-learning models on the contents of this repository
+    where the resulting model is made publicly available or used to
+    generate competing products.
+
+If you would like to use any part of this work in a way not covered above —
+including academic citation, derivative open-source work, or commercial
+partnership — please contact:
+
+  Zikr Apps
+  salam@zikrapps.com
+
+Third-party dependencies (npm packages, fonts, libraries) used by this
+project are licensed under their own respective licenses; see the LICENSE
+files inside each dependency in `node_modules/`.
+
+THIS REPOSITORY IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL
+ZIKR APPS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN
+AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN
+CONNECTION WITH THIS REPOSITORY OR THE USE OR OTHER DEALINGS HEREIN.

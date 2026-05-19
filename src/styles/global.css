@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #f7f3eb;
+  --color-cream-dark: #ebe4d6;
+  --color-forest: #0b3d2e;
+  --color-forest-deep: #082a20;
+  --color-gold: #b8956a;
+  --color-gold-light: #d4b896;
+  --font-serif: "Cormorant Garamond", "Noto Naskh Arabic", "Noto Nastaliq Urdu", Georgia, serif;
+  --font-sans: "DM Sans", "Noto Sans Arabic", system-ui, sans-serif;
+  --motif-image: url("/images/geometric-pattern.png");
+  --motif-tile-w: 512px;
+  --motif-tile-h: 350px;
+  --motif-opacity: 0.065;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply text-forest antialiased;
+    font-family: var(--font-sans);
+    background-color: var(--color-cream);
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: var(--motif-image);
+    background-repeat: repeat;
+    background-size: var(--motif-tile-w) var(--motif-tile-h);
+    opacity: var(--motif-opacity);
+    pointer-events: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+
+  [dir="rtl"] body {
+    font-family: "Noto Sans Arabic", "Noto Nastaliq Urdu", var(--font-sans);
+  }
+
+  [dir="rtl"] h1,
+  [dir="rtl"] h2,
+  [dir="rtl"] h3,
+  [dir="rtl"] .font-serif {
+    font-family: "Noto Naskh Arabic", "Noto Nastaliq Urdu", var(--font-serif);
+  }
+}
+
+@layer utilities {
+  /* Islamic geometric motif on cream / light surfaces */
+  .mashrabiya {
+    @apply relative isolate bg-cream;
+  }
+
+  .mashrabiya::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image: var(--motif-image);
+    background-repeat: repeat;
+    background-size: var(--motif-tile-w) var(--motif-tile-h);
+    opacity: var(--motif-opacity);
+    pointer-events: none;
+  }
+
+  .mashrabiya > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .text-accent {
+    @apply text-gold;
+  }
+}

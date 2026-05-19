@@ -1,0 +1,159 @@
+---
+import type { AppContent, Locale, Translations } from '../i18n';
+import type { AppSlug } from '../lib/app-media';
+import { getAppScreenshots, getDemoVideoSrc } from '../lib/app-media';
+import VideoModal from './VideoModal.astro';
+import PhoneFrame from './PhoneFrame.astro';
+import AppScreenshot from './AppScreenshot.astro';
+import StoreBadges from './StoreBadges.astro';
+import ApkDownload from './ApkDownload.astro';
+import SideloadGuide from './SideloadGuide.astro';
+
+interface Props {
+  slug: AppSlug;
+  app: AppContent;
+  t: Translations;
+  locale: Locale;
+  screenshotPrefix: string;
+}
+
+const { slug, app, t, screenshotPrefix } = Astro.props;
+const isBeta = app.status === 'beta';
+const screenshots = getAppScreenshots(slug);
+const useRealScreenshots = screenshots.length > 0;
+const videoSrc = getDemoVideoSrc(slug);
+const poster = useRealScreenshots ? screenshots[0].src : `/images/apps/${screenshotPrefix}-1.svg`;
+---
+
+<article>
+  <section class="bg-cream mashrabiya py-12 sm:py-16">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <span
+        class:list={[
+          'mb-4 inline-flex items-center gap-2 rounded-full font-semibold uppercase shadow-sm',
+          isBeta
+            ? 'bg-forest px-3 py-1 text-xs text-cream'
+            : 'bg-gold px-4 py-2 text-sm tracking-wider text-forest',
+        ]}
+      >
+        {!isBeta && (
+          <span class="relative flex h-2 w-2">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-forest/60 opacity-75"></span>
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-forest"></span>
+          </span>
+        )}
+        {isBeta ? t.home.inBeta : t.home.inDevelopment}
+      </span>
+      <h1 class="font-serif text-4xl font-semibold text-forest sm:text-6xl">{app.name}</h1>
+      <p class="mt-2 text-xl text-gold">{app.tagline}</p>
+      <p class="mt-4 max-w-2xl text-lg leading-relaxed text-forest/80">{app.description}</p>
+
+      {isBeta && (
+        <div class="mt-8 max-w-md">
+          {app.apkFilename && <ApkDownload filename={app.apkFilename} label={t.home.downloadApk} prominent />}
+          <div class="mt-4">
+            <StoreBadges
+              appStoreUrl={app.appStoreUrl}
+              playStoreUrl={app.playStoreUrl}
+              appStoreLabel={t.home.appStore}
+              playStoreLabel={t.home.playStore}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="bg-forest py-16 text-cream sm:py-20">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <h2 class="mb-8 text-center font-serif text-2xl">
+        {videoSrc ? t.home.watchDemo : t.home.screenshots}
+      </h2>
+
+      {
+        videoSrc && (
+          <VideoModal
+            videoSrc={videoSrc}
+            poster={poster}
+            label={t.home.watchDemo}
+            closeLabel={t.home.closeVideo}
+            variant="thumbnail"
+            class="mb-12"
+          />
+        )
+      }
+
+      <div class="flex flex-wrap items-end justify-center gap-6 sm:gap-8">
+        {
+          useRealScreenshots ? (
+            screenshots.map((shot, i) => (
+              <AppScreenshot
+                src={shot.src}
+                alt={shot.alt}
+                class:list={[
+                  i === 0 && 'rotate-[-3deg] sm:mb-6',
+                  i === 1 && 'rotate-[2deg]',
+                  i === 2 && 'hidden rotate-[-1deg] sm:block',
+                ]}
+              />
+            ))
+          ) : (
+            <>
+              <PhoneFrame
+                image={`/images/apps/${screenshotPrefix}-1.svg`}
+                alt={`${app.name} screenshot 1`}
+                variant="dark"
+                class="rotate-[-4deg] sm:mb-8"
+              />
+              <PhoneFrame
+                image={`/images/apps/${screenshotPrefix}-2.svg`}
+                alt={`${app.name} screenshot 2`}
+                variant="dark"
+                class="hidden rotate-[3deg] sm:block"
+              />
+              <PhoneFrame
+                image={`/images/apps/${screenshotPrefix}-3.svg`}
+                alt={`${app.name} screenshot 3`}
+                variant="dark"
+                class="hidden rotate-[-1deg] lg:block"
+              />
+            </>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="mashrabiya py-12 sm:py-16">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6">
+      {app.longDescription && app.longDescription.length > 0 && (
+        <div class="space-y-5 text-base leading-relaxed text-forest/85 sm:text-lg">
+          {app.longDescription.map((para) => (
+            <p>{para}</p>
+          ))}
+        </div>
+      )}
+
+      {app.closingTagline && (
+        <p class="my-10 border-y border-forest/15 py-6 text-center font-serif text-xl italic text-forest sm:text-2xl">
+          {app.closingTagline}
+        </p>
+      )}
+
+      <h2 class="font-serif text-2xl font-semibold text-forest">{app.name}</h2>
+      <ul class="mt-6 space-y-3 text-forest/80">
+        {app.features.map((f) => (
+          <li class="flex gap-2">
+            <span class="text-gold" aria-hidden="true">◆</span>
+            {f}
+          </li>
+        ))}
+      </ul>
+      {isBeta && (
+        <div class="mt-12">
+          <SideloadGuide t={t} />
+        </div>
+      )}
+    </div>
+  </section>
+</article>

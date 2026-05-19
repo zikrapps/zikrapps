@@ -1,0 +1,28 @@
+---
+interface Props {
+  image?: string;
+  alt?: string;
+  variant?: 'light' | 'dark';
+  class?: string;
+}
+
+const { image, alt = 'App screenshot', variant = 'light', class: className = '' } = Astro.props;
+const screenBg = variant === 'dark' ? 'bg-forest-deep' : 'bg-cream';
+---
+
+<div class:list={['phone-frame relative mx-auto w-[min(100%,260px)]', className]}>
+  <div class="rounded-[2rem] border-[3px] border-forest/20 bg-forest p-2 shadow-2xl shadow-forest/25">
+    <div class:list={['overflow-hidden rounded-[1.6rem]', screenBg]}>
+      {
+        image ? (
+          <img src={image} alt={alt} class="aspect-[9/19] w-full object-cover object-top" loading="lazy" />
+        ) : (
+          <div class="aspect-[9/19] w-full p-4">
+            <slot />
+          </div>
+        )
+      }
+    </div>
+  </div>
+  <div class="absolute start-1/2 top-3 h-1 w-16 -translate-x-1/2 rounded-full bg-forest/30" aria-hidden="true"></div>
+</div>

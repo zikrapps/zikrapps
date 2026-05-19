@@ -1,0 +1,33 @@
+---
+import type { Translations } from '../i18n';
+
+interface Props {
+  t: Translations;
+}
+
+const { t } = Astro.props;
+const { sideload } = t;
+---
+
+<section id="sideload" class="scroll-mt-24 overflow-hidden rounded-2xl border border-forest/10 bg-cream/80 p-6 sm:p-8">
+  <h2 class="font-serif text-2xl font-semibold text-forest">{sideload.title}</h2>
+  <p class="mt-2 text-sm leading-relaxed text-forest/80">{sideload.intro}</p>
+  <ol class="mt-6 space-y-4">
+    {
+      sideload.steps.map((step, i) => (
+        <li class="flex gap-4">
+          <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-forest text-sm font-semibold text-cream">
+            {i + 1}
+          </span>
+          <div>
+            <h3 class="font-medium text-forest">{step.title}</h3>
+            <p class="mt-1 text-sm text-forest/75">{step.body}</p>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+  <p class="mt-6 rounded-lg border border-gold/30 bg-gold/10 px-4 py-3 text-xs leading-relaxed text-forest/80">
+    {sideload.note}
+  </p>
+</section>
