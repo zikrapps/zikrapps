@@ -144,11 +144,18 @@ You're keeping this separate from your personal GitHub on purpose — easier bra
    ```
    https://github.com/zikrapps/zikrapps/releases/download/v0.1.0-beta
    ```
-4. **Wire it into the deploy.** In Cloudflare Pages → your project → **Settings → Environment variables → Production**, set:
+4. **Wire it into the deploy (optional).** The repo ships a production fallback in `src/lib/apk-base-url.ts` pointing at the current release tag, so downloads work after a normal `git push` without any dashboard variable.
+
+   To override per environment without editing code, set a **build-time** variable (not only Worker runtime secrets):
+   - Cloudflare → **Workers & Pages** → **zikrapps** → **Settings** → **Build** → **Build configuration** → **Edit** → **Environment variables** (if your UI shows it), **or** keep the committed fallback in `src/lib/apk-base-url.ts` and bump it when you tag a new release.
+
    ```
    PUBLIC_APK_BASE_URL = https://github.com/zikrapps/zikrapps/releases/download/v0.1.0-beta
    ```
-5. **Redeploy** (Pages → Deployments → click "Retry deployment" on the latest, or push any commit).
+
+   ⚠️ **Variables and secrets** on the Worker (the panel with **Deploy**) are **runtime-only** — Astro will not see them during `npm run build`, and links will stay as `/downloads/*.apk` (404 HTML downloads).
+
+5. **Redeploy** (push to `main`, or **Deployments** → **Retry deployment**).
 6. **Smoke-test:** open `https://zikrapps.com/apps/tazkirah`, click "Download APK (Android)". The browser should download `tazkirah-v01.apk` from `github.com`.
 
 ### Bumping a version later

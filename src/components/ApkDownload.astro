@@ -1,4 +1,6 @@
 ---
+import { APK_BASE_URL } from '../lib/apk-base-url';
+
 interface Props {
   filename: string;
   label: string;
@@ -6,19 +8,18 @@ interface Props {
 }
 
 const { filename, label, prominent = true } = Astro.props;
-// In production we serve APKs from GitHub Releases (free, supports large
-// files, no bandwidth fees). Locally we fall back to public/downloads/ so
-// `npm run dev` still works without an internet round-trip.
-//
-// Set PUBLIC_APK_BASE_URL in .env / your hosting provider, e.g.:
-//   PUBLIC_APK_BASE_URL=https://github.com/<user>/zikrapps/releases/download/v0.1.0-beta
-const baseUrl = (import.meta.env.PUBLIC_APK_BASE_URL ?? '').replace(/\/$/, '');
-const href = baseUrl ? `${baseUrl}/${filename}` : `/downloads/${filename}`;
+
+// Production: GitHub Releases (see src/lib/apk-base-url.ts).
+// Local dev: set PUBLIC_APK_BASE_URL empty in .env to use public/downloads/.
+const useGitHub = Boolean(import.meta.env.PUBLIC_APK_BASE_URL) || import.meta.env.PROD;
+const href = useGitHub ? `${APK_BASE_URL}/${filename}` : `/downloads/${filename}`;
+// `download` only works same-origin; external APK URLs should open normally.
+const isExternal = href.startsWith('http');
 ---
 
 <a
   href={href}
-  download
+  {...!isExternal && { download: true }}
   class:list={[
     'inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all',
     prominent
