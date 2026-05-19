@@ -18,7 +18,7 @@ npm run preview
 3. **Store links** — Edit `src/i18n/en.ts` (and `ar.ts`, `ur.ts`) — update `appStoreUrl` and `playStoreUrl` for each beta app.
 4. **Screenshots** — Real PNGs live in `public/images/apps/`. Add more by dropping files in and registering them in `src/lib/app-media.ts`.
 5. **Demo videos** — Live in `public/videos/`. Replace per release.
-6. **APK files (local dev only)** — Drop `tazkirah-v01.apk` and `misbaha-v01.apk` into `public/downloads/` (gitignored). In production they're served from GitHub Releases via `PUBLIC_APK_BASE_URL`.
+6. **APK files** — In production they're served from GitHub Releases via `PUBLIC_APK_BASE_URL` (see [`docs/HOSTING.md`](docs/HOSTING.md)). Do **not** place `.apk` files inside `public/downloads/` — the Cloudflare adapter rejects any single asset over 25 MiB and the build will fail. Keep local copies outside the project tree.
 
 For the full deployment runbook see [`docs/HOSTING.md`](docs/HOSTING.md).
 

@@ -126,10 +126,9 @@ You're keeping this separate from your personal GitHub on purpose — easier bra
 
 ## Phase 4 · Publish the APKs via GitHub Releases (15 min)
 
-1. **Locally**, confirm the two APKs are in `public/downloads/` but gitignored:
+1. **Locate your local APK files.** Keep them **outside** the project tree (e.g. `~/opt/zikrapps-local-apks/`) — the Cloudflare Workers adapter rejects builds containing any file over 25 MiB, so `*.apk` files inside `public/downloads/` will break `npm run build` locally.
    ```bash
-   ls -lh public/downloads/*.apk
-   git status -- public/downloads/   # should show nothing
+   ls -lh ~/opt/zikrapps-local-apks/*.apk
    ```
 2. **Cut a release on GitHub** under the org repo:
    ```bash
@@ -137,8 +136,8 @@ You're keeping this separate from your personal GitHub on purpose — easier bra
      --repo zikrapps/zikrapps \
      --title "v0.1.0 beta" \
      --notes "First public beta. Misbaha and Tazkirah Android builds. Sideload only." \
-     public/downloads/tazkirah-v01.apk \
-     public/downloads/misbaha-v01.apk
+     ~/opt/zikrapps-local-apks/tazkirah-v01.apk \
+     ~/opt/zikrapps-local-apks/misbaha-v01.apk
    ```
    (or use the GitHub web UI: `github.com/zikrapps/zikrapps/releases/new` → upload both `.apk` files as assets)
 3. **Grab the base download URL.** It looks like:
