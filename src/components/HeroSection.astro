@@ -1,5 +1,7 @@
 ---
 import type { Translations } from '../i18n';
+import { getAppScreenshots } from '../lib/app-media';
+import AppScreenshot from './AppScreenshot.astro';
 import PhoneFrame from './PhoneFrame.astro';
 
 interface Props {
@@ -7,9 +9,11 @@ interface Props {
 }
 
 const { t } = Astro.props;
+const tazkirahShot = getAppScreenshots('tazkirah')[0];
+const misbahaShot = getAppScreenshots('misbaha')[0];
 ---
 
-<section class="mashrabiya relative overflow-hidden">
+<section class="mashrabiya relative overflow-x-clip overflow-y-visible">
   <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-2 lg:py-20">
     <div class="order-2 lg:order-1">
       <p class="mb-3 text-[11px] font-medium tracking-[0.25em] text-forest/60 uppercase">{t.home.appsEyebrow}</p>
@@ -26,23 +30,46 @@ const { t } = Astro.props;
         <span aria-hidden="true">→</span>
       </a>
     </div>
-    <div class="order-1 flex justify-center lg:order-2 lg:justify-end">
-      <PhoneFrame variant="light" class="lg:-me-8">
-        <div class="flex h-full flex-col text-forest">
-          <p class="text-[10px] tracking-widest text-forest/50 uppercase">Fajr · 04:48</p>
-          <p class="mt-6 font-serif text-lg leading-snug">Remember Allah in the morning and the evening.</p>
-          <ul class="mt-auto space-y-2 text-xs text-forest/70">
-            <li class="flex justify-between border-b border-forest/10 py-2">
-              <span>Duʿā after Fajr</span>
-              <span class="text-gold">✓</span>
-            </li>
-            <li class="flex justify-between border-b border-forest/10 py-2">
-              <span>Surah al-Kahf</span>
-              <span class="text-forest/40">Fri</span>
-            </li>
-          </ul>
-        </div>
-      </PhoneFrame>
+    <div class="order-1 flex justify-center overflow-visible lg:order-2 lg:justify-end">
+      <div
+        class="relative mx-auto flex min-h-[380px] w-full max-w-[min(100%,420px)] items-end justify-center overflow-visible sm:min-h-[420px] sm:max-w-[460px]"
+      >
+        {
+          tazkirahShot && (
+            <AppScreenshot
+              src={tazkirahShot.src}
+              alt={tazkirahShot.alt}
+              class="absolute bottom-2 start-0 z-0 mx-0 w-[42%] max-w-[190px] -rotate-6 shadow-xl sm:bottom-0 sm:-start-10 sm:w-[200px] sm:max-w-none"
+            />
+          )
+        }
+        {
+          misbahaShot && (
+            <AppScreenshot
+              src={misbahaShot.src}
+              alt={misbahaShot.alt}
+              class="absolute bottom-2 end-0 z-0 mx-0 w-[42%] max-w-[190px] rotate-6 shadow-xl sm:bottom-0 sm:-end-10 sm:w-[200px] sm:max-w-none"
+            />
+          )
+        }
+        <PhoneFrame variant="light" class="relative z-10">
+          <div class="flex h-full flex-col text-forest">
+            <p class="text-[10px] tracking-widest text-forest/50 uppercase">Fajr · 04:48</p>
+            <p class="mt-6 font-serif text-lg leading-snug">Remember Allah in the morning and the evening.</p>
+            <ul class="mt-auto space-y-2 text-xs text-forest/70">
+              <li class="flex justify-between border-b border-forest/10 py-2">
+                <span>Duʿā after Fajr</span>
+                <span class="text-gold">✓</span>
+              </li>
+              <li class="flex justify-between border-b border-forest/10 py-2">
+                <span>Surah al-Kahf</span>
+                <span class="text-forest/40">Fri</span>
+              </li>
+            </ul>
+          </div>
+        </PhoneFrame>
+      </div>
+      <p class="sr-only">Preview of Mehrab in front, with Tazkirah and Misbaha app screens behind.</p>
     </div>
   </div>
   <div class="relative z-[2] h-16 bg-gradient-to-b from-cream/0 via-cream/80 to-forest sm:h-24" aria-hidden="true"></div>
