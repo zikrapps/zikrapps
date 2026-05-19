@@ -7,7 +7,7 @@
  * On Cloudflare Workers, dashboard "Variables and secrets" are runtime-only;
  * the committed fallback below is what production builds use (same as APK URLs).
  */
-const FORMSPREE_FALLBACK = 'https://formspree.io/f/REPLACE_ME';
+const FORMSPREE_FALLBACK = 'https://formspree.io/f/xaqkqoyk';
 
 export const FORM_ENDPOINT = (
   import.meta.env.PUBLIC_FORM_ENDPOINT ?? FORMSPREE_FALLBACK

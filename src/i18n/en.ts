@@ -138,7 +138,7 @@ const en: Translations = {
     privacy: 'We use your email only to reply. No mailing lists.',
     disclaimer: {
       title: 'A note on authenticity',
-      body: 'The adhkar, duas and supplications included in our apps are drawn from well-known compilations, but human compilation is never beyond error. Please verify the authenticity of any zikr, dua or hadith with respected scholars and authoritative sources before relying on it. If you spot a mistake, we welcome corrections — write to us using the form above.',
+      body: 'The adhkar, duas and supplications included in our apps are drawn from well-known compilations, but human compilation is never beyond error. Please verify the authenticity of any zikr, dua or hadith with respected scholars and authoritative sources before relying on it. If you spot a mistake, we welcome corrections — write to us using the form below.',
     },
   },
   footer: {

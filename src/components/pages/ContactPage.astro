@@ -56,16 +56,6 @@ const formAction = isFormConfigured ? FORM_ENDPOINT : undefined;
         data-submit-label={t.contact.submit}
         data-submitting-label={t.contact.submitting}
       >
-        {
-          import.meta.env.DEV && !isFormConfigured && (
-            <p class="rounded-lg border border-gold/40 bg-gold/10 px-4 py-3 text-sm text-forest/80">
-              Form not configured — set your Formspree URL in{' '}
-              <code class="text-xs">src/lib/form-endpoint.ts</code> or{' '}
-              <code class="text-xs">PUBLIC_FORM_ENDPOINT</code> in <code class="text-xs">.env</code>.
-            </p>
-          )
-        }
-
         {/* Honeypot — hidden from users, bots fill it */}
         <input
           type="text"
