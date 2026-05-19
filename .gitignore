@@ -31,3 +31,9 @@ dist/downloads/*.apk
 # The build script reads these to regenerate brand assets in public/images/brand/,
 # which ARE committed. Keep the originals out of the repo.
 design/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
