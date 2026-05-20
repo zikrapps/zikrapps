@@ -1,6 +1,6 @@
 ---
 import type { Locale, Translations } from '../i18n';
-import { contactPath, homePath } from '../lib/paths';
+import { contactPath, copyrightPath, homePath, privacyPath } from '../lib/paths';
 import Logo from './icons/Logo.astro';
 import Wordmark from './icons/Wordmark.astro';
 
@@ -26,12 +26,26 @@ const { locale, t } = Astro.props;
         />
       </a>
       <p class="max-w-md text-sm text-cream/80">{t.footer.tagline}</p>
-      <a
-        href={contactPath(locale)}
-        class="rounded-full border border-cream/30 px-5 py-2 text-sm font-medium transition-colors hover:bg-cream/10"
-      >
-        {t.nav.contact}
-      </a>
+      <div class="flex flex-wrap items-center justify-center gap-3 md:justify-end">
+        <a
+          href={privacyPath(locale)}
+          class="rounded-full border border-cream/30 px-5 py-2 text-sm font-medium transition-colors hover:bg-cream/10"
+        >
+          {t.nav.privacy}
+        </a>
+        <a
+          href={copyrightPath(locale)}
+          class="rounded-full border border-cream/30 px-5 py-2 text-sm font-medium transition-colors hover:bg-cream/10"
+        >
+          {t.nav.copyright}
+        </a>
+        <a
+          href={contactPath(locale)}
+          class="rounded-full border border-cream/30 px-5 py-2 text-sm font-medium transition-colors hover:bg-cream/10"
+        >
+          {t.nav.contact}
+        </a>
+      </div>
     </div>
     <div
       class="mt-10 flex items-start gap-3 rounded-xl border border-gold/30 bg-forest-deep/40 px-4 py-3 text-start text-xs leading-relaxed text-cream/80"
@@ -51,6 +65,10 @@ const { locale, t } = Astro.props;
       </svg>
       <p>{t.footer.disclaimer}</p>
     </div>
-    <p class="mt-6 text-center text-xs text-cream/50">{t.footer.rights}</p>
+    <p class="mt-6 text-center text-xs text-cream/50">
+      <a href={copyrightPath(locale)} class="underline-offset-2 hover:text-cream/80 hover:underline">
+        {t.footer.rights}
+      </a>
+    </p>
   </div>
 </footer>

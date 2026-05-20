@@ -1,4 +1,6 @@
 import type { Translations } from './types';
+import copyright from './copyright/en';
+import privacy from './privacy/en';
 
 const en: Translations = {
   meta: {
@@ -12,6 +14,8 @@ const en: Translations = {
     misbaha: 'Misbaha',
     mehrab: 'Mehrab',
     contact: 'Contact',
+    privacy: 'Privacy',
+    copyright: 'Copyright',
     exploreApps: 'Explore the apps',
   },
   lang: {
@@ -141,6 +145,8 @@ const en: Translations = {
       body: 'The adhkar, duas and supplications included in our apps are drawn from well-known compilations, but human compilation is never beyond error. Please verify the authenticity of any zikr, dua or hadith with respected scholars and authoritative sources before relying on it. If you spot a mistake, we welcome corrections — write to us using the form below.',
     },
   },
+  privacy,
+  copyright,
   footer: {
     tagline: 'Built with care for those who remember.',
     rights: '© 2026 Zikr Apps. All rights reserved.',

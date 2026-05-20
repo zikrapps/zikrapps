@@ -337,3 +337,29 @@ console.log(`✓ zikr-mark-reversed.png (${reversed.width}x${reversed.height})`)
   console.log(`✓ public/favicon.svg`);
   void readFile;
 }
+
+// Instagram company profile: 1080×1080 cream square; mark scaled to fit the
+// circle crop (keep content inside ~68% so corners of the bbox stay visible).
+{
+  const IG_SIZE = 1080;
+  const MARK_MAX = Math.round(IG_SIZE * 0.68);
+  const markBuf = await sharp(resolve(OUT_DIR, 'zikr-mark-primary.png'))
+    .resize({ width: MARK_MAX, height: MARK_MAX, fit: 'inside' })
+    .png({ compressionLevel: 9 })
+    .toBuffer();
+  const markMeta = await sharp(markBuf).metadata();
+  const left = Math.round((IG_SIZE - markMeta.width) / 2);
+  const top = Math.round((IG_SIZE - markMeta.height) / 2);
+  await sharp({
+    create: {
+      width: IG_SIZE,
+      height: IG_SIZE,
+      channels: 3,
+      background: { r: CREAM[0], g: CREAM[1], b: CREAM[2] },
+    },
+  })
+    .composite([{ input: markBuf, left, top }])
+    .png({ compressionLevel: 9 })
+    .toFile(resolve(OUT_DIR, 'instagram-profile.png'));
+  console.log(`✓ instagram-profile.png (${IG_SIZE}×${IG_SIZE}, upload as IG profile photo)`);
+}

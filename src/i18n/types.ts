@@ -10,6 +10,21 @@ export interface SideloadStep {
   body: string;
 }
 
+export interface PrivacySection {
+  id: string;
+  title: string;
+  paragraphs: string[];
+  bullets?: string[];
+}
+
+export interface PrivacyContent {
+  title: string;
+  subtitle: string;
+  effectiveDate: string;
+  tableOfContents: string;
+  sections: PrivacySection[];
+}
+
 export interface AppContent {
   name: string;
   tagline: string;
@@ -36,6 +51,8 @@ export interface Translations {
     misbaha: string;
     mehrab: string;
     contact: string;
+    privacy: string;
+    copyright: string;
     exploreApps: string;
   };
   lang: {
@@ -92,6 +109,8 @@ export interface Translations {
       body: string;
     };
   };
+  privacy: PrivacyContent;
+  copyright: PrivacyContent;
   footer: {
     tagline: string;
     rights: string;

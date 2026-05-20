@@ -1,0 +1,67 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Locale } from '../../i18n';
+import { getTranslations } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getTranslations(locale);
+const p = t.privacy;
+---
+
+<BaseLayout locale={locale} t={t} title={p.title} description={p.subtitle}>
+  <section class="bg-cream mashrabiya py-12 sm:py-20">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6">
+      <header>
+        <h1 class="font-serif text-4xl font-semibold text-forest">{p.title}</h1>
+        <p class="mt-3 text-forest/80">{p.subtitle}</p>
+        <p class="mt-2 text-sm text-forest/60">{p.effectiveDate}</p>
+      </header>
+
+      <nav
+        class="mt-10 rounded-2xl border border-forest/10 bg-white/50 p-5 sm:p-6"
+        aria-label={p.tableOfContents}
+      >
+        <p class="text-xs font-semibold tracking-wide text-forest/60 uppercase">{p.tableOfContents}</p>
+        <ol class="mt-3 list-inside list-decimal space-y-1.5 text-sm text-forest/90">
+          {
+            p.sections.map((section) => (
+              <li>
+                <a href={`#${section.id}`} class="underline-offset-4 hover:text-forest hover:underline">
+                  {section.title}
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+
+      <div class="prose-policy mt-12 space-y-12 text-forest/90">
+        {
+          p.sections.map((section) => (
+            <section id={section.id} class="scroll-mt-24">
+              <h2 class="font-serif text-2xl font-semibold text-forest">{section.title}</h2>
+              <div class="mt-4 space-y-4 text-sm leading-relaxed sm:text-base">
+                {section.paragraphs.map((paragraph) => (
+                  <p>{paragraph}</p>
+                ))}
+              </div>
+              {
+                section.bullets && section.bullets.length > 0 && (
+                  <ul class="mt-4 list-disc space-y-2 ps-5 text-sm leading-relaxed sm:text-base">
+                    {section.bullets.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                )
+              }
+            </section>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,4 +1,6 @@
 import type { Translations } from './types';
+import copyright from './copyright/ar';
+import privacy from './privacy/ar';
 
 const ar: Translations = {
   meta: {
@@ -12,6 +14,8 @@ const ar: Translations = {
     misbaha: 'مسبحة',
     mehrab: 'محراب',
     contact: 'تواصل',
+    privacy: 'الخصوصية',
+    copyright: 'حقوق النشر',
     exploreApps: 'استكشف التطبيقات',
   },
   lang: {
@@ -139,6 +143,8 @@ const ar: Translations = {
       body: 'الأذكار والأدعية الواردة في تطبيقاتنا مأخوذة من مجاميع معروفة، غير أن الجمع البشري لا يخلو من خطأ. يُرجى التحقق من صحة أي ذكرٍ أو دعاءٍ أو حديثٍ من العلماء الموثوقين والمصادر المعتمدة قبل الاعتماد عليه. وإن وقفتم على خطأ فنرحّب بتصويبكم — تواصلوا معنا عبر النموذج أدناه.',
     },
   },
+  privacy,
+  copyright,
   footer: {
     tagline: 'صُنعت بعناية لمن يذكرون.',
     rights: '© 2026 تطبيقات ذكر. جميع الحقوق محفوظة.',

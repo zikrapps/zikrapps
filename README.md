@@ -30,6 +30,8 @@ For the full deployment runbook see [`docs/HOSTING.md`](docs/HOSTING.md).
 | `/ar/`, `/ur/` | Localized home |
 | `/apps/tazkirah`, `/apps/misbaha`, `/apps/mehrab` | App detail pages |
 | `/contact` | Feedback form |
+| `/privacy` | Privacy policy (all apps + website) |
+| `/copyright` | Copyright & usage rights |
 
 Arabic and Urdu paths are prefixed automatically (`/ar/apps/tazkirah`, etc.).
 

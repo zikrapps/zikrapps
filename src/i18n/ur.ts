@@ -1,4 +1,6 @@
 import type { Translations } from './types';
+import copyright from './copyright/ur';
+import privacy from './privacy/ur';
 
 const ur: Translations = {
   meta: {
@@ -12,6 +14,8 @@ const ur: Translations = {
     misbaha: 'مسبحہ',
     mehrab: 'محراب',
     contact: 'رابطہ',
+    privacy: 'رازداری',
+    copyright: 'کاپی رائٹ',
     exploreApps: 'ایپس دیکھیں',
   },
   lang: {
@@ -141,6 +145,8 @@ const ur: Translations = {
       body: 'ہماری ایپس میں شامل اذکار، دعائیں اور تسبیحات معتبر مجموعوں سے لی گئی ہیں، تاہم انسانی ترتیب میں کمی ممکن ہے۔ کسی بھی ذکر، دعا یا حدیث کی صحت پر اعتماد کرنے سے پہلے معتبر علماء اور مستند ذرائع سے ضرور تصدیق کر لیجیے۔ اگر کوئی غلطی نظر آئے تو ہم تصحیح کا خیر مقدم کرتے ہیں — نیچے دیے گئے فارم کے ذریعے ہم سے رابطہ کریں۔',
     },
   },
+  privacy,
+  copyright,
   footer: {
     tagline: 'ان کے لیے احتیاط سے بنایا گیا جو یاد کرتے ہیں۔',
     rights: '© 2026 ذکر ایپس۔ جملہ حقوق محفوظ۔',
