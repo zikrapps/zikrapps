@@ -37,6 +37,12 @@ export interface AppContent {
   status: 'beta' | 'development';
   appStoreUrl?: string;
   playStoreUrl?: string;
+  /** Shown when Play listing is not live yet (e.g. Tazkirah). */
+  playStoreComingSoon?: boolean;
+  /** Short line under the app name / above download buttons (App Store live). */
+  storeAvailability?: string;
+  /** Android distribution note (Play soon + APK beta). */
+  storeAndroidNote?: string;
   apkFilename?: string;
 }
 
@@ -78,6 +84,7 @@ export interface Translations {
     appStore: string;
     playStore: string;
     downloadApk: string;
+    playStoreComingSoon: string;
     sideloadTitle: string;
   };
   apps: {
@@ -113,6 +120,8 @@ export interface Translations {
   copyright: PrivacyContent;
   footer: {
     tagline: string;
+    instagramAria: string;
+    instagramHandle: string;
     rights: string;
     disclaimer: string;
   };

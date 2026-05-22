@@ -1,6 +1,8 @@
 ---
 import type { Locale, Translations } from '../i18n';
 import { contactPath, copyrightPath, homePath, privacyPath } from '../lib/paths';
+import { INSTAGRAM_URL } from '../lib/social';
+import Instagram from './icons/Instagram.astro';
 import Logo from './icons/Logo.astro';
 import Wordmark from './icons/Wordmark.astro';
 
@@ -25,7 +27,19 @@ const { locale, t } = Astro.props;
           baseClass="text-cream"
         />
       </a>
-      <p class="max-w-md text-sm text-cream/80">{t.footer.tagline}</p>
+      <div class="flex max-w-md flex-col items-center gap-3 text-center md:items-start md:text-start">
+        <p class="text-sm text-cream/80">{t.footer.tagline}</p>
+        <a
+          href={INSTAGRAM_URL}
+          class="inline-flex items-center gap-2 rounded-full border border-cream/30 px-4 py-2 text-sm font-medium text-cream transition-colors hover:bg-cream/10"
+          rel="noopener noreferrer"
+          target="_blank"
+          aria-label={t.footer.instagramAria}
+        >
+          <Instagram class="h-5 w-5 text-gold-light" />
+          <span>{t.footer.instagramHandle}</span>
+        </a>
+      </div>
       <div class="flex flex-wrap items-center justify-center gap-3 md:justify-end">
         <a
           href={privacyPath(locale)}

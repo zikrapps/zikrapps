@@ -17,7 +17,7 @@ interface Props {
   screenshotPrefix: string;
 }
 
-const { slug, app, t, screenshotPrefix } = Astro.props;
+const { slug, app, t, locale, screenshotPrefix } = Astro.props;
 const isBeta = app.status === 'beta';
 const screenshots = getAppScreenshots(slug);
 const useRealScreenshots = screenshots.length > 0;
@@ -49,16 +49,24 @@ const poster = useRealScreenshots ? screenshots[0].src : `/images/apps/${screens
       <p class="mt-4 max-w-2xl text-lg leading-relaxed text-forest/80">{app.description}</p>
 
       {isBeta && (
-        <div class="mt-8 max-w-md">
+        <div class="mt-8 max-w-md space-y-4">
+          {app.storeAvailability && (
+            <p class="text-sm font-semibold text-forest">{app.storeAvailability}</p>
+          )}
+          <StoreBadges
+            locale={locale}
+            surface="light"
+            appStoreUrl={app.appStoreUrl}
+            playStoreUrl={app.playStoreUrl}
+            playStoreComingSoon={app.playStoreComingSoon}
+            playStoreComingSoonLabel={t.home.playStoreComingSoon}
+            appStoreLabel={t.home.appStore}
+            playStoreLabel={t.home.playStore}
+          />
+          {app.storeAndroidNote && (
+            <p class="text-sm leading-relaxed text-forest/80">{app.storeAndroidNote}</p>
+          )}
           {app.apkFilename && <ApkDownload filename={app.apkFilename} label={t.home.downloadApk} prominent />}
-          <div class="mt-4">
-            <StoreBadges
-              appStoreUrl={app.appStoreUrl}
-              playStoreUrl={app.playStoreUrl}
-              appStoreLabel={t.home.appStore}
-              playStoreLabel={t.home.playStore}
-            />
-          </div>
         </div>
       )}
     </div>

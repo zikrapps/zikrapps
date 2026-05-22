@@ -42,6 +42,7 @@ const ar: Translations = {
     appStore: 'حمّل من App Store',
     playStore: 'حمّل من Google Play',
     downloadApk: 'تحميل APK (أندرويد)',
+    playStoreComingSoon: 'Google Play — قريباً',
     sideloadTitle: 'كيفية التثبيت على أندرويد',
   },
   apps: {
@@ -62,8 +63,11 @@ const ar: Translations = {
         'وضعا العمرة والحج، ومتعدد اللغات',
       ],
       status: 'beta',
-      appStoreUrl: '#',
-      playStoreUrl: '#',
+      appStoreUrl: 'https://apps.apple.com/app/id6771478388',
+      playStoreComingSoon: true,
+      storeAvailability: 'متوفر الآن على iPhone و iPad.',
+      storeAndroidNote:
+        'Google Play قريباً. إلى ذلك الحين، ثبّت النسخة التجريبية لأندرويد عبر تنزيل APK أدناه.',
       apkFilename: 'tazkirah-v01.apk',
     },
     misbaha: {
@@ -147,6 +151,8 @@ const ar: Translations = {
   copyright,
   footer: {
     tagline: 'صُنعت بعناية لمن يذكرون.',
+    instagramAria: 'تابع تطبيقات ذكر على إنستغرام',
+    instagramHandle: '@zikrapps',
     rights: '© 2026 تطبيقات ذكر. جميع الحقوق محفوظة.',
     disclaimer:
       'يُرجى التحقق دائماً من صحة الأذكار والأدعية من العلماء الموثوقين والمصادر المعتمدة.',

@@ -42,6 +42,7 @@ const ur: Translations = {
     appStore: 'App Store سے ڈاؤن لوڈ',
     playStore: 'Google Play سے حاصل کریں',
     downloadApk: 'APK ڈاؤن لوڈ (اینڈرائیڈ)',
+    playStoreComingSoon: 'Google Play — جلد آ رہا ہے',
     sideloadTitle: 'اینڈرائیڈ پر انسٹال کیسے کریں',
   },
   apps: {
@@ -62,8 +63,11 @@ const ur: Translations = {
         'عمرہ اور حج موڈ، متعدد زبانیں',
       ],
       status: 'beta',
-      appStoreUrl: '#',
-      playStoreUrl: '#',
+      appStoreUrl: 'https://apps.apple.com/app/id6771478388',
+      playStoreComingSoon: true,
+      storeAvailability: 'اب iPhone اور iPad پر دستیاب ہے۔',
+      storeAndroidNote:
+        'Google Play جلد آ رہا ہے۔ اس وقت تک، نیچے APK ڈاؤن لوڈ سے اینڈرائیڈ بیٹا انسٹال کریں۔',
       apkFilename: 'tazkirah-v01.apk',
     },
     misbaha: {
@@ -149,6 +153,8 @@ const ur: Translations = {
   copyright,
   footer: {
     tagline: 'ان کے لیے احتیاط سے بنایا گیا جو یاد کرتے ہیں۔',
+    instagramAria: 'ذکر ایپس کو انسٹاگرام پر فالو کریں',
+    instagramHandle: '@zikrapps',
     rights: '© 2026 ذکر ایپس۔ جملہ حقوق محفوظ۔',
     disclaimer:
       'اذکار اور دعاؤں کی صحت ہمیشہ معتبر علماء اور مستند ذرائع سے تصدیق کر لینی چاہیے۔',

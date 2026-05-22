@@ -71,16 +71,34 @@ const textMuted = isDark ? 'text-cream/80' : 'text-forest/80';
         </ul>
 
         <div class="mt-8 flex flex-col gap-4">
+          {
+            isBeta && app.storeAvailability && (
+              <p class:list={['text-sm font-semibold', isDark ? 'text-cream' : 'text-forest']}>
+                {app.storeAvailability}
+              </p>
+            )
+          }
+          {
+            isBeta && (
+              <StoreBadges
+                locale={locale}
+                surface={isDark ? 'dark' : 'light'}
+                appStoreUrl={app.appStoreUrl}
+                playStoreUrl={app.playStoreUrl}
+                playStoreComingSoon={app.playStoreComingSoon}
+                playStoreComingSoonLabel={t.home.playStoreComingSoon}
+                appStoreLabel={t.home.appStore}
+                playStoreLabel={t.home.playStore}
+              />
+            )
+          }
+          {
+            isBeta && app.storeAndroidNote && (
+              <p class:list={['max-w-lg text-sm leading-relaxed', textMuted]}>{app.storeAndroidNote}</p>
+            )
+          }
           {isBeta && app.apkFilename && (
             <ApkDownload filename={app.apkFilename} label={t.home.downloadApk} prominent />
-          )}
-          {isBeta && (
-            <StoreBadges
-              appStoreUrl={app.appStoreUrl}
-              playStoreUrl={app.playStoreUrl}
-              appStoreLabel={t.home.appStore}
-              playStoreLabel={t.home.playStore}
-            />
           )}
         </div>
 

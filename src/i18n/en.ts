@@ -42,6 +42,7 @@ const en: Translations = {
     appStore: 'Download on the App Store',
     playStore: 'Get it on Google Play',
     downloadApk: 'Download APK (Android)',
+    playStoreComingSoon: 'Google Play — coming soon',
     sideloadTitle: 'How to install on Android',
   },
   apps: {
@@ -62,8 +63,11 @@ const en: Translations = {
         'Umrah and Hajj modes, multi-language',
       ],
       status: 'beta',
-      appStoreUrl: '#',
-      playStoreUrl: '#',
+      appStoreUrl: 'https://apps.apple.com/app/id6771478388',
+      playStoreComingSoon: true,
+      storeAvailability: 'Available on iPhone and iPad now.',
+      storeAndroidNote:
+        'Google Play is coming soon. Until then, install the Android beta with the APK download below.',
       apkFilename: 'tazkirah-v01.apk',
     },
     misbaha: {
@@ -149,6 +153,8 @@ const en: Translations = {
   copyright,
   footer: {
     tagline: 'Built with care for those who remember.',
+    instagramAria: 'Follow Zikr Apps on Instagram',
+    instagramHandle: '@zikrapps',
     rights: '© 2026 Zikr Apps. All rights reserved.',
     disclaimer:
       'The authenticity of adhkar and duas should always be verified with respected scholars and authoritative sources.',
