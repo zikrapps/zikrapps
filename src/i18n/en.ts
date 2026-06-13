@@ -50,7 +50,7 @@ const en: Translations = {
       name: 'Tazkirah',
       tagline: 'Your companion for Umrah & Hajj',
       description:
-        'A mobile app that walks you through Umrah and Hajj step by step — duas, rituals, and progress in one calm, focused place.',
+        'A mobile app that walks you through Umrah and Hajj step by step — duas, rituals, and progress in one calm, focused place. No account required; your journey stays on your phone, never on our servers.',
       longDescription: [
         'Flip through stage-by-stage duas in order, mark what you have read, and jump from the journey guide to the right dua for each stop. Track ṭawāf and saʿī with simple taps, log tasbeeh as you go, and see how far you have come on an illustrated route map — with optional map views for key locations.',
         'Built for pilgrims, not tourists: clear structure, no clutter, and support for English, Urdu, Arabic, and more. Switch between Umrah and Hajj modes when your journey calls for it.',
@@ -60,7 +60,7 @@ const en: Translations = {
         'Stage-by-stage duas with read-progress',
         'Ṭawāf, saʿī, and tasbeeh counters',
         'Illustrated route map with key locations',
-        'Umrah and Hajj modes, multi-language',
+        'Private by design — nothing you do is uploaded or shared with Zikr Apps',
       ],
       status: 'beta',
       appStoreUrl: 'https://apps.apple.com/app/id6771478388',
@@ -74,28 +74,32 @@ const en: Translations = {
       name: 'Misbaha',
       tagline: 'A digital tasbīḥ with intention',
       description:
-        'Count dhikr with haptic feedback, presets for common adhkār, and a screen that stays dim for night remembrance.',
+        'Count dhikr with haptic feedback, presets for common adhkār, and a screen that stays dim for night remembrance. Your counts and settings live only on your device.',
       features: [
         'Preset adhkār collections',
         'Custom counters and targets',
         'Haptic tap feedback',
-        'Night-friendly display',
+        'Private by design — your dhikr never leaves your phone or reaches Zikr Apps',
       ],
       status: 'beta',
-      appStoreUrl: '#',
-      playStoreUrl: '#',
+      appStoreUrl:
+        'https://apps.apple.com/us/app/misbaha-%D9%85-%D8%B3-%D8%A8-%D8%AD-%D8%A9/id6777759005',
+      playStoreComingSoon: true,
+      storeAvailability: 'Available on iPhone and iPad now.',
+      storeAndroidNote:
+        'Google Play is coming soon. Until then, install the Android beta with the APK download below.',
       apkFilename: 'misbaha-1.1.0.apk',
     },
     mehrab: {
       name: 'Mehrab',
       tagline: 'Prayer times and qibla',
       description:
-        'Accurate prayer times, a clear qibla compass, and a minimal home for the moments before you stand — currently in active development.',
+        'Accurate prayer times, a clear qibla compass, and a minimal home for the moments before you stand — currently in active development. Location is used on-device only; we never receive your coordinates.',
       features: [
         'Location-based prayer times',
         'Qibla compass',
         'Clean pre-prayer focus',
-        'Works offline where possible',
+        'Private & offline — data stays on your device, never shared with Zikr Apps',
       ],
       status: 'development',
     },
