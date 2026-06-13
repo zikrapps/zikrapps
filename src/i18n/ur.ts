@@ -84,7 +84,7 @@ const ur: Translations = {
       status: 'beta',
       appStoreUrl: '#',
       playStoreUrl: '#',
-      apkFilename: 'misbaha-v01.apk',
+      apkFilename: 'misbaha-1.1.0.apk',
     },
     mehrab: {
       name: 'محراب',
