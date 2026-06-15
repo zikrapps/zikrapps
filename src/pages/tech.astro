@@ -1,0 +1,1046 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getTranslations } from '../i18n';
+import ApkDownload from '../components/ApkDownload.astro';
+import { appStoreBadgeSrc } from '../lib/store-badges';
+
+// Hidden engineering write-up. Reachable at /tech and (via middleware) at the
+// tech.zikrapps.com hostname. Intentionally not linked from any site nav.
+const locale = 'en';
+const t = getTranslations(locale);
+
+const pageTitle = 'From flaky to flawless';
+const pageDescription =
+  'A story of debugging an unreliable automated test setup for our Misbaha app — the dead ends, the root cause, and the fix — with before/after diagrams.';
+
+const heroStats = [
+  { label: 'Automated runs', value: '150' },
+  { label: 'Final pass rate', value: '100%' },
+  { label: 'Distinct issues fixed', value: '13' },
+  { label: 'Worst point', value: '84%' },
+];
+
+// How the testing works, in plain terms.
+const methodology = [
+  {
+    title: 'Five everyday journeys',
+    body: 'We picked the five things people actually do in Misbaha and scripted each one end to end, the way a real person would tap through it.',
+  },
+  {
+    title: 'Thirty times each',
+    body: 'We run every journey 30 times — 150 runs in total. Flakiness hides from a single run: a glitch that strikes 1 time in 20 is invisible unless you repeat the test enough to catch it.',
+  },
+  {
+    title: 'A clean slate every time',
+    body: 'Before each run the app is reset to a known starting state and we wait until it is genuinely ready, so one test can never contaminate the next.',
+  },
+  {
+    title: 'One phone at a time',
+    body: 'After discovering the engine was tripping over itself, we run on a single simulated phone, one journey after another, for dependable results.',
+  },
+  {
+    title: 'All-or-nothing scoring',
+    body: 'A run only counts as a pass if every required step in the journey succeeds. Anything less is a fail.',
+  },
+  {
+    title: 'Measure, fix, measure again',
+    body: 'We measure reliability first (the "baseline"), fix the causes of every failure, then measure again (the "hardened" run) to prove the improvement.',
+  },
+];
+
+// The five user journeys (plain-language, mapped from the internal flows A–E).
+const journeys = [
+  {
+    n: 1,
+    title: 'Open the app',
+    desc: 'Cold-start Misbaha and land on a ready Today screen with no pop-ups in the way.',
+  },
+  {
+    n: 2,
+    title: 'Count a dhikr',
+    desc: 'Open the Tasbeeh tab, choose a supplication, count it, and confirm the tally goes up.',
+  },
+  {
+    n: 3,
+    title: 'Search for a supplication',
+    desc: 'Search the duas by name and open a matching result.',
+  },
+  {
+    n: 4,
+    title: 'Start a surprise goal',
+    desc: 'Begin a randomly chosen multi-day goal and confirm it appears in the active goals list.',
+  },
+  {
+    n: 5,
+    title: 'Leave and come back',
+    desc: 'Count, switch away from the app, return, and confirm the count was preserved.',
+  },
+];
+
+// Per-journey pass rates: baseline (the 84.6% run) vs hardened (the 100% run).
+const results = [
+  { journey: 'Open the app', checks: 'Stable launch', basePass: 27, hardPass: 30 },
+  { journey: 'Count a dhikr', checks: 'Counting works', basePass: 21, hardPass: 30 },
+  { journey: 'Search for a supplication', checks: 'Search + open', basePass: 25, hardPass: 30 },
+  { journey: 'Start a surprise goal', checks: 'Goal created', basePass: 24, hardPass: 30 },
+  { journey: 'Leave and come back', checks: 'State persists', basePass: 29, hardPass: 30 },
+];
+const RUNS_PER = 30;
+const baseTotal = results.reduce((a, r) => a + r.basePass, 0);
+const hardTotal = results.reduce((a, r) => a + r.hardPass, 0);
+const pct = (n: number, d: number) => Math.round((n / d) * 100);
+
+// Reliability metrics (computed from the per-run result files of the baseline
+// 84.6% batch vs the hardened 100% batch). Plain-language "meaning" for non-experts.
+const metrics = [
+  {
+    name: 'Success rate',
+    meaning: 'How often a journey passes',
+    base: '84.6%',
+    hard: '100%',
+  },
+  {
+    name: 'Flake rate',
+    meaning: 'Runs that disagreed with the usual result',
+    base: '15.4%',
+    hard: '0%',
+  },
+  {
+    name: 'Reproducibility',
+    meaning: 'Journeys that gave the same verdict every time',
+    base: '0 of 5',
+    hard: '5 of 5',
+  },
+  {
+    name: 'False alarms',
+    meaning: 'Failures where the app was actually fine',
+    base: 'all 23 failures',
+    hard: '0',
+  },
+  {
+    name: 'When failures struck',
+    meaning: 'How far into a journey it broke',
+    base: 'at the first step',
+    hard: 'n/a — none failed',
+  },
+  {
+    name: 'Diagnosed failures',
+    meaning: 'Failures we could explain and categorise',
+    base: '100%',
+    hard: '100%',
+  },
+];
+
+// Failure taxonomy — the standard QA classes, with how many of our 13 issues fell
+// into each and a plain-language note.
+const taxonomy = [
+  {
+    cls: 'App bug',
+    count: 2,
+    note: 'Genuine defects in the app, found by the tests and fixed in the app\u2019s code.',
+  },
+  {
+    cls: 'Test design bug',
+    count: 3,
+    note: 'The test itself was wrong — pointing at the wrong thing or making a bad assumption.',
+  },
+  {
+    cls: 'Agent / timing error',
+    count: 2,
+    note: 'The test acted before the app had finished drawing. This caused all 23 of the baseline run failures.',
+  },
+  {
+    cls: 'Environment / infrastructure',
+    count: 6,
+    note: 'Device, build, or test-engine plumbing broke — including the root-cause crash.',
+  },
+  {
+    cls: 'State drift',
+    count: 0,
+    note: 'Prevented by design: every run starts from a clean, reset state.',
+  },
+  {
+    cls: 'Weak check (oracle)',
+    count: 0,
+    note: 'Prevented by design: we check real numbers (the count went up by 3), not just that "some text exists".',
+  },
+  {
+    cls: 'Unknown',
+    count: 0,
+    note: 'Every single failure was explained — nothing left unclassified.',
+  },
+];
+
+// Pinned environment + harness facts.
+const environment = [
+  { k: 'App', v: 'Misbaha 1.2.0 (build 3)' },
+  { k: 'Platform', v: 'iOS 26.3 — iPhone 17 Pro Simulator' },
+  { k: 'Test engine', v: 'DevLoop 0.0.96 (QualGent)' },
+  { k: 'Runs per batch', v: '5 journeys \u00d7 30 = 150' },
+  { k: 'Execution', v: 'One simulator, sequential' },
+  { k: 'Clean slate', v: 'Reset deep link + readiness wait before each run' },
+];
+
+const toc = [
+  { id: 'meet', label: 'Meet Misbaha' },
+  { id: 'open-source', label: 'The code is on GitHub' },
+  { id: 'stack', label: 'How Misbaha is built' },
+  { id: 'about', label: 'What this is about' },
+  { id: 'method', label: 'How we test' },
+  { id: 'journeys', label: 'The five journeys' },
+  { id: 'results', label: 'Results by journey' },
+  { id: 'scorecard', label: 'The reliability scorecard' },
+  { id: 'issues', label: 'Every issue, before and after' },
+  { id: 'taxonomy', label: 'Sorting failures by type' },
+  { id: 'categories', label: 'How to read the categories' },
+  { id: 'setup', label: 'The exact setup' },
+  { id: 'limitations', label: 'Honest limitations' },
+  { id: 'takeaway', label: 'The takeaway' },
+];
+
+const limitations = [
+  'Running one phone at a time is slower than running many — that was the trade we made for dependable results until the test engine stops launching duplicate controllers.',
+  'The surprise goal is random on purpose, so we check that a goal was created, not which one.',
+  'Because we test a packaged build, code changes need a rebuild before the tests exercise them.',
+  'These numbers come from one before batch and one after batch; more batches would tighten the confidence further.',
+];
+
+// --- Static SVG flow-diagram generator --------------------------------------
+// Renders a vertical sequence of rounded boxes joined by arrows. The final box
+// is tinted by variant (before = red outcome, after = green outcome). No
+// client-side dependency: the SVG is emitted at build time.
+function esc(s: string): string {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function flowSvg(steps: string[], variant: 'before' | 'after', uid: string): string {
+  const W = 300;
+  const nodeW = 264;
+  const x = (W - nodeW) / 2;
+  const fs = 13;
+  const lh = 17;
+  const vpad = 11;
+  const gap = 30;
+  const accent = variant === 'before' ? '#c0392b' : '#1e8449';
+  const accentBg = variant === 'before' ? '#fdecea' : '#e9f7ef';
+  const marker = `arrow-${uid}`;
+
+  let y = 6;
+  const boxes: string[] = [];
+  const rows: { topY: number; bottomY: number }[] = [];
+
+  steps.forEach((step, i) => {
+    const lines = String(step).split('\n');
+    const h = lines.length * lh + 2 * vpad;
+    const isLast = i === steps.length - 1;
+    const fill = isLast ? accentBg : '#ffffff';
+    const stroke = isLast ? accent : '#0b3d2e';
+    const textColor = isLast ? accent : '#0b3d2e';
+    const sw = isLast ? 2 : 1.2;
+    boxes.push(
+      `<rect x="${x}" y="${y}" width="${nodeW}" height="${h}" rx="12" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`
+    );
+    const firstBaseline = y + vpad + fs - 2;
+    const tspans = lines
+      .map((ln, li) => `<tspan x="${W / 2}" dy="${li === 0 ? 0 : lh}">${esc(ln)}</tspan>`)
+      .join('');
+    boxes.push(
+      `<text x="${W / 2}" y="${firstBaseline}" text-anchor="middle" font-family="DM Sans, system-ui, sans-serif" font-size="${fs}" font-weight="${isLast ? 600 : 500}" fill="${textColor}">${tspans}</text>`
+    );
+    rows.push({ topY: y, bottomY: y + h });
+    y += h + gap;
+  });
+
+  let arrows = '';
+  for (let i = 0; i < rows.length - 1; i++) {
+    arrows += `<line x1="${W / 2}" y1="${rows[i].bottomY}" x2="${W / 2}" y2="${rows[i + 1].topY - 7}" stroke="#b8956a" stroke-width="1.6" marker-end="url(#${marker})"/>`;
+  }
+
+  const totalH = y - gap + 6;
+  return `<svg viewBox="0 0 ${W} ${totalH}" width="100%" height="auto" role="img" aria-label="${variant} fix flow" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="${marker}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b8956a"/></marker></defs>
+  ${arrows}${boxes.join('')}</svg>`;
+}
+
+// --- Issues (plain story + before/after steps + engineering detail) ----------
+const rawIssues = [
+  {
+    id: 'bundle-id',
+    title: 'Opening the wrong app',
+    category: 'Test config',
+    plain:
+      'Think of every app on a phone as having a unique badge number. Our test handed out the wrong badge number, so it kept knocking on the wrong door.',
+    before: ['Test run', "Open app\n'wrong-id'", 'Phone: no such app', 'Every test fails'],
+    after: ['Test run', "Open app\n'correct-id'", 'Phone opens Misbaha', 'Tests proceed'],
+    fix: "Corrected the app's badge number (its bundle identifier) everywhere the test referred to it.",
+    tech:
+      "The harness's APP_BUNDLE constant was stale. Every apply_routine / mobile_launch_app call targets a bundle id, and it must match the installed binary. Set it to com.zikrapps.misbaha across the harness and routine definitions.",
+  },
+  {
+    id: 'parallelism',
+    title: 'Too many phones at once',
+    category: 'Parallel vs. single-thread',
+    plain:
+      'Running many simulated phones at the same time is like opening too many programs on an old laptop — everything slows to a crawl and things start failing for no real reason.',
+    before: ['1 laptop runs\n5 phones at once', 'CPU saturated', 'Steps time out', '4 of 5 fail'],
+    after: ['1 laptop runs\n1 phone at a time', 'Resources comfortable', 'Tests stay stable'],
+    fix: 'Reduced from 5 simultaneous phones to a single phone running tests one after another.',
+    tech:
+      'Five concurrent simulators saturated the CPU on a 16 GB M4 Air; XCUITest steps blew past postcondition timeouts. Each simulator also runs its own WebDriverAgent, so per-device overhead — not test logic — was the bottleneck. Dropped to 2, then to single-sim sequential.',
+  },
+  {
+    id: 'build-id',
+    title: 'The app built with the wrong ID',
+    category: 'Build / tooling',
+    plain:
+      'Even after fixing the test, the app itself had been manufactured with the wrong badge number printed on it. Both sides have to match.',
+    before: ["Test looks for\n'correct-id'", "Installed app is\n'other-id'", 'Mismatch → not found'],
+    after: ["Test looks for\n'correct-id'", "Rebuilt app is\n'correct-id'", 'Match → found'],
+    fix: 'Set the correct identifier in the app build settings, then rebuilt and reinstalled it.',
+    tech:
+      'PRODUCT_BUNDLE_IDENTIFIER in project.pbxproj was com.misbaha.app for both Debug and Release. Rebuilt with com.zikrapps.misbaha so the installed id matches the routine target.',
+  },
+  {
+    id: 'dialog',
+    title: 'A pop-up kept blocking everything',
+    category: 'Test flow',
+    plain:
+      'To save time, tests used shortcuts to jump between screens. But each shortcut made the phone ask "Are you sure you want to open Misbaha?" — and a question nobody answered stopped the test cold.',
+    before: ['Test taps a shortcut', "System pop-up:\n'Open in Misbaha?'", 'Nobody answers', 'Test stuck → fails'],
+    after: ['Test taps a real button', 'Screen changes normally', "Pop-up? auto-tap 'Open'", 'Test continues'],
+    fix: 'Switched navigation to tapping the app\u2019s real buttons, and taught the test to automatically confirm any pop-up that still appears.',
+    tech:
+      'Custom-scheme deep links (misbaha://test/go/{tab}) trigger the iOS "Open in app?" confirmation. Replaced open_url navigation with tap_element on tab testIDs, and added a confirm_scheme_dialog helper that taps "Open" when a prompt is detected.',
+  },
+  {
+    id: 'router-race',
+    title: 'The app crashed when tests moved too fast',
+    category: 'Real app bug',
+    plain:
+      'A person taking a fraction of a second to react never notices, but a robot is instant. It told the app to switch screens before the app had even finished opening, and the app fell over.',
+    before: ['App starts opening', 'Robot instantly:\ngo to next screen', 'App not ready', 'White crash screen'],
+    after: ['App starts opening', 'App finishes setup', 'Then it navigates', 'No crash'],
+    fix: 'Made the app defer the screen change by one frame, so it only navigates once it is fully mounted and ready.',
+    tech:
+      'expo-router router.replace() ran inside a test route useEffect before the Root Layout mounted → "Attempted to navigate before mounting the Root Layout". Deferred the call with requestAnimationFrame in app/test/reset.tsx and app/test/go/[tab].tsx.',
+  },
+  {
+    id: 'silent-errors',
+    title: 'Errors were happening silently',
+    category: 'Real app bug',
+    plain:
+      'The app had a safety net that caught crashes so users would not see them — but it threw the details away, leaving us blind to what actually broke.',
+    before: ['Something breaks', 'Safety net catches it', 'Details discarded', 'We cannot diagnose'],
+    after: ['Something breaks', 'Safety net catches it', 'Details logged', 'Root cause visible'],
+    fix: 'Added error logging to the safety net so every caught error is recorded with its cause.',
+    tech:
+      'The ErrorBoundary implemented getDerivedStateFromError for fallback UI but had no componentDidCatch, so stacks were swallowed. Added componentDidCatch logging to surface the error and component stack.',
+  },
+  {
+    id: 'stuck-leases',
+    title: 'Phones got "stuck" and unavailable',
+    category: 'Infrastructure',
+    plain:
+      'Each test "reserves" a phone, like checking out a library book. When a test crashed hard, it never returned the book — so the next test was told everything was checked out.',
+    before: ['Test reserves phone', 'Test crashes hard', 'Phone never released', "Next run: 'all busy'"],
+    after: ['Test reserves phone', 'Run ends (even on error)', 'Phone auto-released', 'Next run starts clean'],
+    fix: 'Cleared the stuck reservations and ensured runs always release their phone, even when they fail.',
+    tech:
+      'Force-killed harness processes left qg_acquire_device leases dangling (no finally ran), so the bridge returned device-busy from another "external session". Guaranteed release in a finally block; cleared orphaned leases with a bridge restart.',
+  },
+  {
+    id: 'metro',
+    title: 'Stuck on "Downloading 100%"',
+    category: 'Build / tooling',
+    plain:
+      'The test version of the app downloaded its code live from a developer server every launch. When that server hiccuped, the app froze on a loading bar.',
+    before: ['App launches', 'Fetch code from\ndev server', 'Server stalls', "Frozen at\n'Downloading 100%'"],
+    after: ['App launches', 'Code baked inside', 'Opens instantly,\noffline'],
+    fix: 'Built a self-contained release version with all code bundled inside, removing the live download.',
+    tech:
+      'The dev client streamed its JS bundle from Metro; a stall left the app on "Downloading 100%". Switched to a Release build with the Hermes bundle embedded (keeping EXPO_PUBLIC_E2E=1), eliminating the Metro runtime dependency.',
+  },
+  {
+    id: 'stale-routine',
+    title: 'Looking for a button that had moved',
+    category: 'Test maintenance',
+    plain:
+      'The counting test was written for an older version of the screen. The app had since been redesigned, so the test reached for things that were no longer there.',
+    before: ['Counting test', 'Look for old\nmenu item', 'It was removed', 'Cannot find it → fail'],
+    after: ['Counting test', 'Open current category', 'Press & hold to count', 'Reliable every time'],
+    fix: 'Rewrote the test against the current screen and used a steady press-and-hold gesture instead of fragile rapid taps.',
+    tech:
+      'expand_dua_and_count referenced a removed category and timing-fragile double taps. Rebuilt as v8: open "Quranic Duas", then a zero-displacement swipe_coordinates (~3.2 s long-press) for a deterministic count increment.',
+  },
+  {
+    id: 'goal-timing',
+    title: 'Tapping before the screen was ready',
+    category: 'Test timing',
+    plain:
+      'The "new goal" test moved to a screen and immediately tapped a button there — but under load, the screen took an extra moment to draw, so the tap missed.',
+    before: ['Open Goals screen', 'Immediately tap button', 'Screen still drawing', 'Button missing → fail'],
+    after: ['Open Goals screen', 'Wait until it appears', 'Then tap the button', 'Works under load'],
+    fix: 'Added a "wait until the screen has changed" check before each tap on that flow.',
+    tech:
+      'start_surprise_goal tapped surprise-goal-button before the Goals screen rendered, failing 7/30 under load. Hardened as v4 with wait_for: screen_changed (6 s timeout) on the navigation steps.',
+  },
+  {
+    id: 'splash',
+    title: 'Starting before the app woke up',
+    category: 'Test reset logic',
+    plain:
+      'Between tests we restart the app. We used to wait a fixed number of seconds — but on a busy laptop that guess was too short, so tests began while only the splash logo was showing.',
+    before: ['Restart app', 'Wait a fixed 2 s', 'Busy: still on splash', 'Act on blank → fail'],
+    after: ['Restart app', 'Keep checking the screen', 'Home content visible?', 'Begin the test'],
+    fix: 'Replaced the fixed wait with an active poll that proceeds only once real home-screen content is on screen.',
+    tech:
+      'hard_reset used fixed sleeps; under load the launch splash outlasted them and the first tap hit a bare splash ("Visible: Misbaha"). Added wait_until_ready, which polls mobile_observe_screen for home markers before any routine runs.',
+  },
+  {
+    id: 'retries',
+    title: 'The robot kept losing connection',
+    category: 'Infrastructure',
+    plain:
+      'The automation engine occasionally dropped its connection mid-test. A momentary network blip is not a real product problem, but it was being counted as a test failure.',
+    before: ['Run a step', 'Connection blips', 'Counted as failure'],
+    after: ['Run a step', 'Connection blip?', 'Pause, recover, retry', 'Continue'],
+    fix: 'Added automatic retries with a short backoff and a recovery step, so transient blips no longer fail a test.',
+    tech:
+      'Transient bridge disconnects ("All connection attempts failed" / "Server disconnected") surfaced as execution_error. apply_with_retry catches RuntimeError and recoverable traces, backs off (min(4·n, 15) s), and runs recover_to_today between attempts; real failures still return immediately.',
+  },
+  {
+    id: 'wda-collision',
+    title: 'Two robots fighting over one phone',
+    category: 'Infrastructure (root cause)',
+    plain:
+      'This was the real villain. The automation engine was quietly starting two identical control programs on the same phone. Both tried to use the same single "doorway" (a network port), collided, and crashed — taking the whole test down with them. Restarting one phone helped briefly, then it came back.',
+    before: ['Automation engine', 'Starts TWO controllers\non one phone', 'Both grab the same port', 'Collision → crash', "'Connection failed'\non every test"],
+    after: ['Engine restarted,\nduplicates cleared', 'One controller,\none phone', 'Stable connection', '150 / 150 pass'],
+    fix: 'Ran a single phone sequentially and restarted the automation engine to clear the duplicate control programs and stuck reservations.',
+    tech:
+      'The crash report showed WebDriverAgent aborting in -[FBWebServer startHTTPServer] (FBWebServer.m:124) — a GCDWebServer port-bind failure caused by duplicate "xcodebuild test … WebDriverAgent" launchers targeting the same simulator. The second instance could not bind the WDA port and aborted, so every apply_routine returned "All connection attempts failed". Fixed by single-sim sequential execution plus a QualGent Desktop restart to clear duplicate runners and stale leases.',
+  },
+];
+
+const issues = rawIssues.map((issue) => ({
+  ...issue,
+  beforeSvg: flowSvg(issue.before, 'before', `${issue.id}-b`),
+  afterSvg: flowSvg(issue.after, 'after', `${issue.id}-a`),
+}));
+
+const categories = [
+  { name: 'Real app bug', desc: 'A genuine defect in the app, fixed in the app\u2019s code.' },
+  { name: 'Infrastructure', desc: 'A problem in the testing engine or device plumbing, not the app.' },
+  { name: 'Parallel vs. single-thread', desc: 'Caused by running too much at once on one machine.' },
+  { name: 'Build / tooling', desc: 'How the app was packaged for testing.' },
+  { name: 'Test config / maintenance', desc: 'The test scripts pointed at the wrong thing or had gone stale.' },
+  { name: 'Test timing / flow', desc: 'The test acted faster than the app could respond.' },
+];
+
+const lastUpdated = 'June 2026';
+
+// Project intro assets + open-source + tech stack.
+const promoVideo = '/videos/misbaha-promo-75s.mp4';
+const promoPoster = '/videos/misbaha-promo-75s-poster.jpg';
+const repoUrl = 'https://github.com/zikrapps/misbaha';
+
+const appStoreUrl =
+  'https://apps.apple.com/us/app/misbaha-%D9%85-%D8%B3-%D8%A8-%D8%AD-%D8%A9/id6777759005';
+const appStoreBadge = appStoreBadgeSrc(locale, 'light');
+const misbahaApk = 'misbaha-1.1.0.apk';
+
+const techStack = [
+  {
+    group: 'App framework',
+    items: ['Expo SDK 54', 'React Native 0.81', 'React 19'],
+  },
+  {
+    group: 'Language',
+    items: ['TypeScript'],
+  },
+  {
+    group: 'Navigation',
+    items: ['Expo Router 6 (file-based)'],
+  },
+  {
+    group: 'State & storage',
+    items: ['Zustand', 'AsyncStorage'],
+  },
+  {
+    group: 'UI & motion',
+    items: ['React Native Reanimated 4', 'react-native-svg', 'Expo Haptics'],
+  },
+  {
+    group: 'QA automation',
+    items: ['DevLoop / QualGent', 'iOS Simulator', 'WebDriverAgent'],
+  },
+];
+---
+
+<BaseLayout locale={locale} t={t} title={pageTitle} description={pageDescription}>
+  <!-- Hero -->
+  <section class="bg-forest text-cream">
+    <div class="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24">
+      <p class="text-xs font-semibold tracking-[0.2em] text-gold-light uppercase">
+        Zikr Apps · Engineering notes
+      </p>
+      <h1 class="mt-4 font-serif text-4xl leading-tight font-semibold sm:text-5xl">
+        From flaky to flawless: making our app tests trustworthy
+      </h1>
+      <p class="mt-5 max-w-2xl text-base leading-relaxed text-cream/80 sm:text-lg">
+        We set out to run our Misbaha app through 150 automated tests and trust the result.
+        It started at a frustrating 84%. This is the story of why automated tests lie, the
+        dead ends we hit, and how we reached a clean 100% — with before-and-after pictures
+        for every problem.
+      </p>
+
+      <dl class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {
+          heroStats.map((s) => (
+            <div class="rounded-2xl border border-cream/15 bg-cream/5 p-4">
+              <dt class="text-xs tracking-wide text-cream/60 uppercase">{s.label}</dt>
+              <dd class="mt-1 font-serif text-3xl font-semibold text-gold-light">{s.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <p class="mt-6 text-xs text-cream/50">Last updated {lastUpdated}</p>
+    </div>
+  </section>
+
+  <!-- Table of contents -->
+  <section class="bg-cream mashrabiya pt-14 sm:pt-20">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6">
+      <nav class="rounded-3xl border border-forest/10 bg-white/60 p-6 sm:p-8" aria-label="Table of contents">
+        <h2 class="font-serif text-2xl font-semibold text-forest">On this page</h2>
+        <ol class="mt-5 grid gap-x-8 gap-y-1 sm:grid-cols-2">
+          {
+            toc.map((item, i) => (
+              <li>
+                <a
+                  href={`#${item.id}`}
+                  class="group flex items-baseline gap-3 rounded-lg px-2 py-2 text-forest/85 transition-colors hover:bg-cream hover:text-forest"
+                >
+                  <span class="font-serif text-sm font-semibold text-gold tabular-nums">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span class="group-hover:underline">{item.label}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Introduction: meet Misbaha (75s video) -->
+  <section class="bg-cream mashrabiya py-14 sm:py-20">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6">
+      <div class="space-y-4 text-forest/90">
+        <h2 id="meet" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">Meet Misbaha</h2>
+        <p class="leading-relaxed">
+          Misbaha is a digital prayer-bead (tasbeeh) and supplications app: count your
+          dhikr, keep daily streaks, set goals, and explore a library of authentic duas —
+          all in a calm, distraction-free space. Here is a 75-second look at the app.
+        </p>
+      </div>
+
+      <figure class="mt-8">
+        <div class="overflow-hidden rounded-3xl border border-forest/10 bg-forest/5 shadow-sm">
+          <video
+            class="aspect-video w-full bg-black"
+            controls
+            playsinline
+            preload="metadata"
+            poster={promoPoster}
+          >
+            <source src={promoVideo} type="video/mp4" />
+            Your browser does not support embedded video.
+          </video>
+        </div>
+        <figcaption class="mt-3 text-center text-xs text-forest/55">
+          Misbaha — a 75-second product tour.
+        </figcaption>
+      </figure>
+
+      <!-- Get the app -->
+      <div class="mt-10 rounded-3xl border border-forest/10 bg-white/60 p-6 sm:p-8">
+        <h3 class="font-serif text-xl font-semibold text-forest">Get Misbaha</h3>
+        <p class="mt-2 text-sm text-forest/80">
+          Misbaha is live on the Apple App Store. The Android build is available as a direct
+          download while the Google Play listing is still in review.
+        </p>
+        <div class="mt-5 flex flex-wrap items-center gap-4">
+          <a
+            href={appStoreUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-block transition-opacity hover:opacity-90"
+            aria-label="Download Misbaha on the Apple App Store"
+          >
+            <img src={appStoreBadge} alt="Download on the App Store" class="h-14 w-auto" />
+          </a>
+          <ApkDownload filename={misbahaApk} label="Download for Android (.apk)" />
+        </div>
+        <p class="mt-4 flex items-start gap-2 text-xs text-forest/60">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="mt-0.5 h-4 w-4 shrink-0 text-gold" aria-hidden="true">
+            <path
+              fill-rule="evenodd"
+              d="M10 1.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17ZM9 6a1 1 0 1 1 2 0v5a1 1 0 1 1-2 0V6Zm1 7.25a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+          <span>
+            The <strong class="font-semibold text-forest/75">Google Play Store</strong>{' '}
+            listing is not live yet — until it is, install the Android version using the
+            <code>.apk</code> above (you may need to allow installs from your browser).
+          </span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Open source -->
+  <section class="bg-forest text-cream py-14 sm:py-20">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6">
+      <div class="grid items-center gap-8 sm:grid-cols-[1fr_auto]">
+        <div>
+          <p class="text-xs font-semibold tracking-[0.2em] text-gold-light uppercase">
+            Open source
+          </p>
+          <h2 id="open-source" class="mt-3 scroll-mt-24 font-serif text-3xl font-semibold">The code is on GitHub</h2>
+          <p class="mt-4 max-w-xl leading-relaxed text-cream/80">
+            Misbaha is open source. The full app — every screen, the test journeys, and the
+            reliability suite described on this page — lives in one public repository. Browse
+            the code, file an issue, or follow along with how it is built.
+          </p>
+        </div>
+        <a
+          href={repoUrl}
+          rel="noopener noreferrer"
+          target="_blank"
+          class="inline-flex items-center justify-center gap-2.5 rounded-full bg-cream px-6 py-3 font-medium text-forest transition-transform hover:-translate-y-0.5"
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5" aria-hidden="true">
+            <path
+              d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.11.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.34-1.3-1.7-1.3-1.7-1.06-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.79 2.73 1.27 3.4.97.1-.76.41-1.27.74-1.56-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.29 1.2-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.12 3.05.75.81 1.2 1.84 1.2 3.1 0 4.43-2.7 5.41-5.27 5.69.42.37.8 1.1.8 2.22v3.29c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .5Z"
+            ></path>
+          </svg>
+          <span>zikrapps&#47;misbaha</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech stack -->
+  <section class="bg-cream mashrabiya py-14 sm:py-20">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6">
+      <h2 id="stack" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">How Misbaha is built</h2>
+      <p class="mt-3 max-w-2xl text-forest/80">
+        A modern React Native stack, shipped to iOS and Android from a single codebase.
+      </p>
+      <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          techStack.map((s) => (
+            <div class="rounded-2xl border border-forest/10 bg-white/50 p-5">
+              <h3 class="text-xs font-semibold tracking-wide text-forest/55 uppercase">
+                {s.group}
+              </h3>
+              <ul class="mt-3 flex flex-wrap gap-2">
+                {s.items.map((item) => (
+                  <li class="rounded-full border border-forest/15 bg-cream/60 px-3 py-1 text-sm text-forest">
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-cream mashrabiya py-14 sm:py-20">
+    <div class="mx-auto max-w-4xl px-4 sm:px-6">
+      <!-- Plain intro -->
+      <div class="space-y-4 text-forest/90">
+        <h2 id="about" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">What this is about</h2>
+        <p class="leading-relaxed">
+          Before we ship an update to Misbaha (a digital prayer-bead and supplications app),
+          a fleet of automated tests "uses" the app the way a person would: opening it,
+          tapping around, counting, creating goals, searching. If a test fails, it should
+          mean the app is broken. The trouble is that tests can also fail for reasons that
+          have nothing to do with the app — and telling those apart is most of the work.
+        </p>
+        <p class="leading-relaxed">
+          To measure how trustworthy our app really is, we run each of 5 core journeys 30
+          times — 150 runs in total. A reliable app should pass all of them, every time.
+          Ours kept hovering between 84% and 95%. Below is everything that stood between us
+          and a clean 100%, grouped into a simple category so you can see the pattern:
+          <strong>most failures were never the app at all.</strong>
+        </p>
+      </div>
+
+      <!-- Result headline -->
+      <div class="mt-12 grid gap-4 sm:grid-cols-3">
+        <div class="rounded-2xl border border-forest/10 bg-white/60 p-6 text-center">
+          <p class="text-xs tracking-wide text-forest/60 uppercase">Where we started</p>
+          <p class="mt-2 font-serif text-4xl font-semibold text-[#c0392b]">84%</p>
+          <p class="mt-1 text-sm text-forest/70">126 of 150 runs</p>
+        </div>
+        <div class="flex items-center justify-center">
+          <span class="font-serif text-3xl text-gold">&rarr;</span>
+        </div>
+        <div class="rounded-2xl border border-forest/10 bg-white/60 p-6 text-center">
+          <p class="text-xs tracking-wide text-forest/60 uppercase">Where we landed</p>
+          <p class="mt-2 font-serif text-4xl font-semibold text-[#1e8449]">100%</p>
+          <p class="mt-1 text-sm text-forest/70">150 of 150 runs</p>
+        </div>
+      </div>
+
+      <!-- Methodology -->
+      <div class="mt-16">
+        <h2 id="method" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">How we test</h2>
+        <p class="mt-3 text-forest/80">
+          Reliability is not a single number you check once — it is something you have to
+          measure carefully and repeatedly. Here is the approach in plain terms.
+        </p>
+        <dl class="mt-6 grid gap-4 sm:grid-cols-2">
+          {
+            methodology.map((m) => (
+              <div class="rounded-2xl border border-forest/10 bg-white/50 p-5">
+                <dt class="font-serif text-lg font-semibold text-forest">{m.title}</dt>
+                <dd class="mt-1 text-sm leading-relaxed text-forest/80">{m.body}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <!-- The five journeys -->
+      <div class="mt-16">
+        <h2 id="journeys" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">The five journeys</h2>
+        <p class="mt-3 text-forest/80">
+          These are the five things we make sure work, every single time, before any update
+          reaches our users.
+        </p>
+        <ol class="mt-6 space-y-3">
+          {
+            journeys.map((j) => (
+              <li class="flex items-start gap-4 rounded-2xl border border-forest/10 bg-white/50 p-5">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-forest font-serif text-sm font-semibold text-cream">
+                  {j.n}
+                </span>
+                <div>
+                  <h3 class="font-serif text-lg font-semibold text-forest">{j.title}</h3>
+                  <p class="mt-1 text-sm text-forest/80">{j.desc}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <!-- Results by journey -->
+      <div class="mt-16">
+        <h2 id="results" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">Results by journey</h2>
+        <p class="mt-3 text-forest/80">
+          Each journey ran 30 times before our fixes (baseline) and 30 times after
+          (hardened). The pattern is clear: every journey reached a perfect score.
+        </p>
+        <div class="mt-6 overflow-hidden rounded-2xl border border-forest/10">
+          <table class="w-full border-collapse text-sm">
+            <thead>
+              <tr class="bg-forest text-cream">
+                <th class="px-4 py-3 text-left font-semibold">Journey</th>
+                <th class="px-4 py-3 text-left font-semibold">What it checks</th>
+                <th class="px-4 py-3 text-right font-semibold">Baseline</th>
+                <th class="px-4 py-3 text-right font-semibold">Hardened</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                results.map((r, i) => (
+                  <tr class={i % 2 === 0 ? 'bg-white/60' : 'bg-cream/40'}>
+                    <td class="px-4 py-3 font-medium text-forest">{r.journey}</td>
+                    <td class="px-4 py-3 text-forest/70">{r.checks}</td>
+                    <td class="px-4 py-3 text-right whitespace-nowrap text-[#c0392b]">
+                      {r.basePass}/{RUNS_PER} ({pct(r.basePass, RUNS_PER)}%)
+                    </td>
+                    <td class="px-4 py-3 text-right font-semibold whitespace-nowrap text-[#1e8449]">
+                      {r.hardPass}/{RUNS_PER} (100%)
+                    </td>
+                  </tr>
+                ))
+              }
+              <tr class="border-t-2 border-forest/20 bg-white/80">
+                <td class="px-4 py-3 font-serif font-semibold text-forest" colspan="2">All journeys</td>
+                <td class="px-4 py-3 text-right font-semibold whitespace-nowrap text-[#c0392b]">
+                  {baseTotal}/{RUNS_PER * results.length} ({pct(baseTotal, RUNS_PER * results.length)}%)
+                </td>
+                <td class="px-4 py-3 text-right font-semibold whitespace-nowrap text-[#1e8449]">
+                  {hardTotal}/{RUNS_PER * results.length} (100%)
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-3 text-xs text-forest/55">
+          Baseline = the run before the final round of fixes (84.6% overall). Hardened = the
+          run after all 13 issues were resolved (100% overall, with no connection errors).
+        </p>
+      </div>
+
+      <!-- Reliability metrics -->
+      <div class="mt-16">
+        <h2 id="scorecard" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">The reliability scorecard</h2>
+        <p class="mt-3 text-forest/80">
+          Pass rate is only part of the story. These are the measures QA engineers use to
+          judge whether a test suite can be trusted — before our fixes, and after.
+        </p>
+        <div class="mt-6 overflow-hidden rounded-2xl border border-forest/10">
+          <table class="w-full border-collapse text-sm">
+            <thead>
+              <tr class="bg-forest text-cream">
+                <th class="px-4 py-3 text-left font-semibold">Measure</th>
+                <th class="px-4 py-3 text-left font-semibold">What it means</th>
+                <th class="px-4 py-3 text-right font-semibold">Baseline</th>
+                <th class="px-4 py-3 text-right font-semibold">Hardened</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                metrics.map((m, i) => (
+                  <tr class={i % 2 === 0 ? 'bg-white/60' : 'bg-cream/40'}>
+                    <td class="px-4 py-3 font-medium text-forest">{m.name}</td>
+                    <td class="px-4 py-3 text-forest/70">{m.meaning}</td>
+                    <td class="px-4 py-3 text-right whitespace-nowrap text-[#c0392b]">{m.base}</td>
+                    <td class="px-4 py-3 text-right font-semibold whitespace-nowrap text-[#1e8449]">
+                      {m.hard}
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-3 text-xs text-forest/55">
+          The most telling row is "false alarms": every one of the baseline's 23 failures
+          was the test giving up too early, not a real problem in the app.
+        </p>
+      </div>
+
+      <!-- Per-issue before/after -->
+      <div class="mt-16">
+        <h2 id="issues" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">Every issue, before and after</h2>
+        <p class="mt-3 text-forest/80">
+          Each card shows the problem in plain terms, then a picture of what was happening
+          <span class="font-semibold text-[#c0392b]">before</span> the fix and what happens
+          <span class="font-semibold text-[#1e8449]">after</span> — followed by the technical
+          detail for engineers.
+        </p>
+
+        <div class="mt-8 space-y-4">
+          {
+            issues.map((issue, i) => (
+              <details id={issue.id} class="issue-card scroll-mt-6 overflow-hidden rounded-3xl border border-forest/10 bg-white/60">
+                <summary class="flex cursor-pointer list-none flex-wrap items-center gap-3 p-6 sm:p-8">
+                  <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gold/15 font-serif text-sm font-semibold text-gold">
+                    {i + 1}
+                  </span>
+                  <h3 class="font-serif text-xl font-semibold text-forest sm:text-2xl">{issue.title}</h3>
+                  <span class="rounded-full border border-forest/15 bg-cream px-3 py-1 text-xs font-medium text-forest/70">
+                    {issue.category}
+                  </span>
+                  <span class="ml-auto flex items-center gap-2 text-gold">
+                    <span class="expand-label text-xs font-semibold tracking-wide uppercase">
+                      Expand for details
+                    </span>
+                    <span class="hint-bounce flex h-7 w-7 items-center justify-center rounded-full bg-gold/15">
+                      <svg class="chevron h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M5 8l5 5 5-5" />
+                      </svg>
+                    </span>
+                  </span>
+                </summary>
+
+                <div class="px-6 pb-6 sm:px-8 sm:pb-8">
+                  <p class="leading-relaxed text-forest/85">{issue.plain}</p>
+
+                  <div class="mt-6 grid gap-5 lg:grid-cols-2">
+                    <div class="rounded-2xl border-l-4 border-[#c0392b] bg-[#fdecea]/40 p-4">
+                      <p class="text-xs font-semibold tracking-wide text-[#c0392b] uppercase">Before</p>
+                      <div class="mt-3" set:html={issue.beforeSvg} />
+                    </div>
+                    <div class="rounded-2xl border-l-4 border-[#1e8449] bg-[#e9f7ef]/40 p-4">
+                      <p class="text-xs font-semibold tracking-wide text-[#1e8449] uppercase">After</p>
+                      <div class="mt-3" set:html={issue.afterSvg} />
+                    </div>
+                  </div>
+
+                  <p class="mt-5 text-sm text-forest/85">
+                    <span class="font-semibold text-forest">The fix:</span> {issue.fix}
+                  </p>
+
+                  <details class="group mt-4 rounded-2xl border border-forest/10 bg-cream/60 p-4">
+                    <summary class="cursor-pointer list-none font-semibold text-forest">
+                      <span class="text-gold">›</span> Tech details
+                    </summary>
+                    <p class="mt-3 text-sm leading-relaxed text-forest/80">{issue.tech}</p>
+                  </details>
+                </div>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+
+      <!-- Failure taxonomy -->
+      <div class="mt-16">
+        <h2 id="taxonomy" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">Sorting failures by type</h2>
+        <p class="mt-3 text-forest/80">
+          Good QA work does not just count failures — it sorts them into standard types, so
+          you know whether to fix the app, the test, or the machine. Here is where our 13
+          issues landed, including two types we designed out entirely.
+        </p>
+        <div class="mt-6 space-y-3">
+          {
+            taxonomy.map((tx) => (
+              <div class="flex items-start gap-4 rounded-2xl border border-forest/10 bg-white/50 p-5">
+                <span
+                  class={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-serif text-lg font-semibold ${tx.count === 0 ? 'bg-cream text-forest/50 ring-1 ring-forest/15' : 'bg-forest text-cream'}`}
+                >
+                  {tx.count}
+                </span>
+                <div>
+                  <h3 class="font-serif text-lg font-semibold text-forest">{tx.cls}</h3>
+                  <p class="mt-1 text-sm text-forest/80">{tx.note}</p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+        <p class="mt-3 text-xs text-forest/55">
+          Classification coverage: 100% — every failure was explained, none left as
+          "unknown".
+        </p>
+      </div>
+
+      <!-- Category legend -->
+      <div class="mt-16">
+        <h2 id="categories" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">How to read the categories</h2>
+        <dl class="mt-6 grid gap-4 sm:grid-cols-2">
+          {
+            categories.map((c) => (
+              <div class="rounded-2xl border border-forest/10 bg-white/50 p-5">
+                <dt class="font-serif text-lg font-semibold text-forest">{c.name}</dt>
+                <dd class="mt-1 text-sm text-forest/80">{c.desc}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <!-- Environment & harness -->
+      <div class="mt-16">
+        <h2 id="setup" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">The exact setup</h2>
+        <p class="mt-3 text-forest/80">
+          For anyone who wants to reproduce this, here is precisely what was tested and how.
+        </p>
+        <dl class="mt-6 grid gap-px overflow-hidden rounded-2xl border border-forest/10 bg-forest/10 sm:grid-cols-2">
+          {
+            environment.map((e) => (
+              <div class="bg-white/70 p-4">
+                <dt class="text-xs font-semibold tracking-wide text-forest/55 uppercase">{e.k}</dt>
+                <dd class="mt-1 text-sm font-medium text-forest">{e.v}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <!-- Limitations & next steps -->
+      <div class="mt-16">
+        <h2 id="limitations" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">Honest limitations</h2>
+        <p class="mt-3 text-forest/80">
+          A trustworthy report says what it cannot yet claim. These are the open trade-offs.
+        </p>
+        <ul class="mt-6 space-y-3">
+          {
+            limitations.map((l) => (
+              <li class="flex items-start gap-3 rounded-2xl border border-forest/10 bg-white/50 p-4">
+                <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-gold" />
+                <span class="text-sm leading-relaxed text-forest/80">{l}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Takeaway -->
+      <div class="mt-16 rounded-3xl bg-forest p-8 text-cream sm:p-10">
+        <h2 id="takeaway" class="scroll-mt-24 font-serif text-3xl font-semibold">The takeaway</h2>
+        <p class="mt-4 leading-relaxed text-cream/85">
+          Of the 13 problems we fixed, only a couple were genuine app bugs. The rest were
+          the testing setup itself: machines overloaded, tools misconfigured, and an
+          automation engine quietly tripping over its own feet. That is the real lesson of
+          reliability work — before you can trust what a test says about your app, you have
+          to make the test itself trustworthy.
+        </p>
+        <p class="mt-4 leading-relaxed text-cream/85">
+          Once we did, the picture was unambiguous: <strong class="text-gold-light">150 out
+          of 150 runs passed, with no connection errors at all.</strong>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .issue-card > summary {
+      list-style: none;
+    }
+    .issue-card > summary::-webkit-details-marker {
+      display: none;
+    }
+    .issue-card > summary {
+      transition: background-color 0.2s ease;
+    }
+    .issue-card > summary:hover {
+      background-color: rgb(247 243 233 / 0.5);
+    }
+    .issue-card .chevron {
+      transition: transform 0.25s ease;
+    }
+    .issue-card[open] .chevron {
+      transform: rotate(180deg);
+    }
+    .issue-card[open] .hint-bounce {
+      animation: none;
+      background-color: transparent;
+    }
+    .issue-card[open] .expand-label {
+      display: none;
+    }
+    .hint-bounce {
+      animation: hint-bounce 1.6s ease-in-out infinite;
+    }
+    @keyframes hint-bounce {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(3px);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hint-bounce {
+        animation: none;
+      }
+    }
+  </style>
+</BaseLayout>

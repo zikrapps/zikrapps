@@ -7,6 +7,9 @@
 		"directory": "./dist",
 		"binding": "ASSETS"
 	},
+	"routes": [
+		{ "pattern": "tech.zikrapps.com", "custom_domain": true }
+	],
 	"observability": {
 		"enabled": true
 	}

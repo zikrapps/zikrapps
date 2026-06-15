@@ -32,6 +32,9 @@ dist/downloads/*.apk
 # which ARE committed. Keep the originals out of the repo.
 design/
 
+# test coverage
+coverage/
+
 # wrangler files
 .wrangler
 .dev.vars*

@@ -124,6 +124,29 @@ You're keeping this separate from your personal GitHub on purpose — easier bra
 
 ---
 
+## Phase 3b · Engineering write-up at `tech.zikrapps.com` (5 min)
+
+The repo ships a long-form engineering page at `/tech` (Misbaha QA reliability write-up, promo video, GitHub link). Astro middleware rewrites the bare subdomain root to that route, so `https://tech.zikrapps.com/` serves the same content as `/tech`.
+
+> **A GitHub push alone is not enough for the subdomain.** Code deploys automatically, but `tech.zikrapps.com` is a new hostname and must be attached in Cloudflare once.
+
+1. **Push to `main`.** Cloudflare Pages redeploys the page, middleware, and assets (`src/pages/tech.astro`, `src/middleware.ts`, `public/videos/misbaha-promo-75s.*`).
+2. **Add the custom domain (one-time):**
+   - **Workers & Pages** → your **zikrapps** project → **Custom domains** → **Set up a custom domain**
+   - Enter `tech.zikrapps.com`
+   - Cloudflare creates the DNS record and provisions HTTPS automatically (the zone is already on this account). No manual DNS entry is usually needed.
+3. **Verify:**
+   - `https://zikrapps.com/tech` — should work after step 1 (preview path; no subdomain setup required)
+   - `https://tech.zikrapps.com/` — should show the write-up after step 2 (middleware rewrite)
+
+`wrangler.jsonc` also declares a `tech.zikrapps.com` route for `npm run deploy` (`wrangler deploy`). If you deploy via **Pages + Git** (the default in this runbook), treat the **Custom domains** step above as the source of truth — do not rely on the wrangler route alone.
+
+Before pushing changes that touch routing or env fallbacks, run `npm test` locally (Vitest suite under `tests/`).
+
+✅ Phase 3b done.
+
+---
+
 ## Phase 4 · Publish the APKs via GitHub Releases (15 min)
 
 1. **Locate your local APK files.** Keep them **outside** the project tree (e.g. `~/opt/zikrapps-local-apks/`) — the Cloudflare Workers adapter rejects builds containing any file over 25 MiB, so `*.apk` files inside `public/downloads/` will break `npm run build` locally.
@@ -277,10 +300,11 @@ If it fails, open the browser **Developer tools → Network** tab, submit again,
 
 ## Operations: what to do for each future release
 
-1. Bump version in i18n if filename changes.
-2. `gh release create vX.Y.Z-beta ...apks`.
-3. Update `PUBLIC_APK_BASE_URL` in Pages env vars.
-4. Push i18n change → auto-deploy.
+1. Run `npm test` (and `npm run test:coverage` if you changed `src/lib/` or middleware).
+2. Bump version in i18n if filename changes.
+3. `gh release create vX.Y.Z-beta ...apks`.
+4. Update `PUBLIC_APK_BASE_URL` in Pages env vars (or the fallback in `src/lib/apk-base-url.ts`).
+5. Push to `main` → auto-deploy.
 
 That's it. The site is on free hosting forever, the email is the only recurring spend, and the APK distribution costs nothing per release.
 

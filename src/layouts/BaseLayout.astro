@@ -9,9 +9,10 @@ interface Props {
   t: Translations;
   title?: string;
   description?: string;
+  noindex?: boolean;
 }
 
-const { locale, t, title, description } = Astro.props;
+const { locale, t, title, description, noindex } = Astro.props;
 const pageTitle = title ? `${title} · ${t.meta.siteTitle}` : t.meta.siteTitle;
 const pageDescription = description ?? t.meta.siteDescription;
 const dir = locale === 'en' ? 'ltr' : 'rtl';
@@ -24,6 +25,7 @@ const lang = locale === 'ur' ? 'ur' : locale === 'ar' ? 'ar' : 'en';
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={pageDescription} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <meta property="og:title" content={pageTitle} />
