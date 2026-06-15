@@ -484,7 +484,7 @@ const techStack = [
 <BaseLayout locale={locale} t={t} title={pageTitle} description={pageDescription} linkOrigin={Astro.site}>
   <!-- Hero -->
   <section class="bg-forest text-cream">
-    <div class="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24">
+    <div class="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-12">
       <p class="text-xs font-semibold tracking-[0.2em] text-gold-light uppercase">
         Zikr Apps · Engineering notes
       </p>
@@ -498,7 +498,7 @@ const techStack = [
         for every problem.
       </p>
 
-      <dl class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <dl class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {
           heroStats.map((s) => (
             <div class="rounded-2xl border border-cream/15 bg-cream/5 p-4">
@@ -513,17 +513,17 @@ const techStack = [
   </section>
 
   <!-- Table of contents -->
-  <section class="bg-cream mashrabiya pt-14 sm:pt-20">
+  <section class="bg-cream mashrabiya pt-8 sm:pt-10">
     <div class="mx-auto max-w-4xl px-4 sm:px-6">
-      <nav class="rounded-3xl border border-forest/10 bg-white/60 p-6 sm:p-8" aria-label="Table of contents">
+      <nav class="rounded-3xl border border-forest/10 bg-white/60 p-5 sm:p-6" aria-label="Table of contents">
         <h2 class="font-serif text-2xl font-semibold text-forest">On this page</h2>
-        <ol class="mt-5 grid gap-x-8 gap-y-1 sm:grid-cols-2">
+        <ol class="mt-4 grid gap-x-8 gap-y-0.5 sm:grid-cols-2">
           {
             toc.map((item, i) => (
               <li>
                 <a
                   href={`#${item.id}`}
-                  class="group flex items-baseline gap-3 rounded-lg px-2 py-2 text-forest/85 transition-colors hover:bg-cream hover:text-forest"
+                  class="group flex items-baseline gap-3 rounded-lg px-2 py-1.5 text-forest/85 transition-colors hover:bg-cream hover:text-forest"
                 >
                   <span class="font-serif text-sm font-semibold text-gold tabular-nums">
                     {String(i + 1).padStart(2, '0')}
@@ -539,7 +539,7 @@ const techStack = [
   </section>
 
   <!-- Introduction: meet Misbaha (75s video) -->
-  <section class="bg-cream mashrabiya py-14 sm:py-20">
+  <section class="bg-cream mashrabiya py-8 sm:py-10">
     <div class="mx-auto max-w-4xl px-4 sm:px-6">
       <div class="space-y-4 text-forest/90">
         <h2 id="meet" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">Meet Misbaha</h2>
@@ -576,7 +576,7 @@ const techStack = [
       </figure>
 
       <!-- Get the app -->
-      <div class="mt-10 rounded-3xl border border-forest/10 bg-white/60 p-6 sm:p-8">
+      <div class="mt-8 rounded-3xl border border-forest/10 bg-white/60 p-5 sm:p-6">
         <h3 class="font-serif text-xl font-semibold text-forest">Get Misbaha</h3>
         <p class="mt-2 text-sm text-forest/80">
           Misbaha is live on the Apple App Store. The Android build is available as a direct
@@ -613,7 +613,7 @@ const techStack = [
   </section>
 
   <!-- Open source -->
-  <section class="bg-forest text-cream py-14 sm:py-20">
+  <section class="bg-forest text-cream py-8 sm:py-10">
     <div class="mx-auto max-w-4xl px-4 sm:px-6">
       <div class="grid items-center gap-8 sm:grid-cols-[1fr_auto]">
         <div>
@@ -645,7 +645,7 @@ const techStack = [
   </section>
 
   <!-- Tech stack -->
-  <section class="bg-cream mashrabiya py-14 sm:py-20">
+  <section class="bg-cream mashrabiya py-8 sm:py-10">
     <div class="mx-auto max-w-4xl px-4 sm:px-6">
       <h2 id="stack" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">How Misbaha is built</h2>
       <p class="mt-3 max-w-2xl text-forest/80">
@@ -672,7 +672,7 @@ const techStack = [
     </div>
   </section>
 
-  <section class="bg-cream mashrabiya py-14 sm:py-20">
+  <section class="bg-cream mashrabiya py-8 sm:py-10">
     <div class="mx-auto max-w-4xl px-4 sm:px-6">
       <!-- Plain intro -->
       <div class="space-y-4 text-forest/90">
@@ -694,7 +694,7 @@ const techStack = [
       </div>
 
       <!-- Result headline -->
-      <div class="mt-12 grid gap-4 sm:grid-cols-3">
+      <div class="mt-8 grid gap-4 sm:grid-cols-3">
         <div class="rounded-2xl border border-forest/10 bg-white/60 p-6 text-center">
           <p class="text-xs tracking-wide text-forest/60 uppercase">Where we started</p>
           <p class="mt-2 font-serif text-4xl font-semibold text-[#c0392b]">84%</p>
@@ -711,7 +711,7 @@ const techStack = [
       </div>
 
       <!-- Methodology -->
-      <div class="mt-16">
+      <div class="mt-8">
         <h2 id="method" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">How we test</h2>
         <p class="mt-3 text-forest/80">
           Reliability is not a single number you check once — it is something you have to
@@ -730,7 +730,7 @@ const techStack = [
       </div>
 
       <!-- The five journeys -->
-      <div class="mt-16">
+      <div class="mt-8">
         <h2 id="journeys" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">The five journeys</h2>
         <p class="mt-3 text-forest/80">
           These are the five things we make sure work, every single time, before any update
@@ -754,7 +754,7 @@ const techStack = [
       </div>
 
       <!-- Results by journey -->
-      <div class="mt-16">
+      <div class="mt-8">
         <h2 id="results" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">Results by journey</h2>
         <p class="mt-3 text-forest/80">
           Each journey ran 30 times before our fixes (baseline) and 30 times after
@@ -764,33 +764,33 @@ const techStack = [
           <table class="w-full border-collapse text-sm">
             <thead>
               <tr class="bg-forest text-cream">
-                <th class="px-4 py-3 text-left font-semibold">Journey</th>
-                <th class="px-4 py-3 text-left font-semibold">What it checks</th>
-                <th class="px-4 py-3 text-right font-semibold">Baseline</th>
-                <th class="px-4 py-3 text-right font-semibold">Hardened</th>
+                <th class="px-4 py-2.5 text-left font-semibold">Journey</th>
+                <th class="px-4 py-2.5 text-left font-semibold">What it checks</th>
+                <th class="px-4 py-2.5 text-right font-semibold">Baseline</th>
+                <th class="px-4 py-2.5 text-right font-semibold">Hardened</th>
               </tr>
             </thead>
             <tbody>
               {
                 results.map((r, i) => (
                   <tr class={i % 2 === 0 ? 'bg-white/60' : 'bg-cream/40'}>
-                    <td class="px-4 py-3 font-medium text-forest">{r.journey}</td>
-                    <td class="px-4 py-3 text-forest/70">{r.checks}</td>
-                    <td class="px-4 py-3 text-right whitespace-nowrap text-[#c0392b]">
+                    <td class="px-4 py-2.5 font-medium text-forest">{r.journey}</td>
+                    <td class="px-4 py-2.5 text-forest/70">{r.checks}</td>
+                    <td class="px-4 py-2.5 text-right whitespace-nowrap text-[#c0392b]">
                       {r.basePass}/{RUNS_PER} ({pct(r.basePass, RUNS_PER)}%)
                     </td>
-                    <td class="px-4 py-3 text-right font-semibold whitespace-nowrap text-[#1e8449]">
+                    <td class="px-4 py-2.5 text-right font-semibold whitespace-nowrap text-[#1e8449]">
                       {r.hardPass}/{RUNS_PER} (100%)
                     </td>
                   </tr>
                 ))
               }
               <tr class="border-t-2 border-forest/20 bg-white/80">
-                <td class="px-4 py-3 font-serif font-semibold text-forest" colspan="2">All journeys</td>
-                <td class="px-4 py-3 text-right font-semibold whitespace-nowrap text-[#c0392b]">
+                <td class="px-4 py-2.5 font-serif font-semibold text-forest" colspan="2">All journeys</td>
+                <td class="px-4 py-2.5 text-right font-semibold whitespace-nowrap text-[#c0392b]">
                   {baseTotal}/{RUNS_PER * results.length} ({pct(baseTotal, RUNS_PER * results.length)}%)
                 </td>
-                <td class="px-4 py-3 text-right font-semibold whitespace-nowrap text-[#1e8449]">
+                <td class="px-4 py-2.5 text-right font-semibold whitespace-nowrap text-[#1e8449]">
                   {hardTotal}/{RUNS_PER * results.length} (100%)
                 </td>
               </tr>
@@ -804,7 +804,7 @@ const techStack = [
       </div>
 
       <!-- Reliability metrics -->
-      <div class="mt-16">
+      <div class="mt-8">
         <h2 id="scorecard" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">The reliability scorecard</h2>
         <p class="mt-3 text-forest/80">
           Pass rate is only part of the story. These are the measures QA engineers use to
@@ -814,20 +814,20 @@ const techStack = [
           <table class="w-full border-collapse text-sm">
             <thead>
               <tr class="bg-forest text-cream">
-                <th class="px-4 py-3 text-left font-semibold">Measure</th>
-                <th class="px-4 py-3 text-left font-semibold">What it means</th>
-                <th class="px-4 py-3 text-right font-semibold">Baseline</th>
-                <th class="px-4 py-3 text-right font-semibold">Hardened</th>
+                <th class="px-4 py-2.5 text-left font-semibold">Measure</th>
+                <th class="px-4 py-2.5 text-left font-semibold">What it means</th>
+                <th class="px-4 py-2.5 text-right font-semibold">Baseline</th>
+                <th class="px-4 py-2.5 text-right font-semibold">Hardened</th>
               </tr>
             </thead>
             <tbody>
               {
                 metrics.map((m, i) => (
                   <tr class={i % 2 === 0 ? 'bg-white/60' : 'bg-cream/40'}>
-                    <td class="px-4 py-3 font-medium text-forest">{m.name}</td>
-                    <td class="px-4 py-3 text-forest/70">{m.meaning}</td>
-                    <td class="px-4 py-3 text-right whitespace-nowrap text-[#c0392b]">{m.base}</td>
-                    <td class="px-4 py-3 text-right font-semibold whitespace-nowrap text-[#1e8449]">
+                    <td class="px-4 py-2.5 font-medium text-forest">{m.name}</td>
+                    <td class="px-4 py-2.5 text-forest/70">{m.meaning}</td>
+                    <td class="px-4 py-2.5 text-right whitespace-nowrap text-[#c0392b]">{m.base}</td>
+                    <td class="px-4 py-2.5 text-right font-semibold whitespace-nowrap text-[#1e8449]">
                       {m.hard}
                     </td>
                   </tr>
@@ -843,7 +843,7 @@ const techStack = [
       </div>
 
       <!-- Per-issue before/after -->
-      <div class="mt-16">
+      <div class="mt-8">
         <h2 id="issues" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">Every issue, before and after</h2>
         <p class="mt-3 text-forest/80">
           Each card shows the problem in plain terms, then a picture of what was happening
@@ -852,11 +852,11 @@ const techStack = [
           detail for engineers.
         </p>
 
-        <div class="mt-8 space-y-4">
+        <div class="mt-6 space-y-3">
           {
             issues.map((issue, i) => (
               <details id={issue.id} class="issue-card scroll-mt-6 overflow-hidden rounded-3xl border border-forest/10 bg-white/60">
-                <summary class="flex cursor-pointer list-none flex-wrap items-center gap-3 p-6 sm:p-8">
+                <summary class="flex cursor-pointer list-none flex-wrap items-center gap-3 p-5 sm:p-6">
                   <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gold/15 font-serif text-sm font-semibold text-gold">
                     {i + 1}
                   </span>
@@ -876,7 +876,7 @@ const techStack = [
                   </span>
                 </summary>
 
-                <div class="px-6 pb-6 sm:px-8 sm:pb-8">
+                <div class="px-5 pb-5 sm:px-6 sm:pb-6">
                   <p class="leading-relaxed text-forest/85">{issue.plain}</p>
 
                   <div class="mt-6 grid gap-5 lg:grid-cols-2">
@@ -908,7 +908,7 @@ const techStack = [
       </div>
 
       <!-- Failure taxonomy -->
-      <div class="mt-16">
+      <div class="mt-8">
         <h2 id="taxonomy" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">Sorting failures by type</h2>
         <p class="mt-3 text-forest/80">
           Good QA work does not just count failures — it sorts them into standard types, so
@@ -939,7 +939,7 @@ const techStack = [
       </div>
 
       <!-- Category legend -->
-      <div class="mt-16">
+      <div class="mt-8">
         <h2 id="categories" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">How to read the categories</h2>
         <dl class="mt-6 grid gap-4 sm:grid-cols-2">
           {
@@ -954,7 +954,7 @@ const techStack = [
       </div>
 
       <!-- Environment & harness -->
-      <div class="mt-16">
+      <div class="mt-8">
         <h2 id="setup" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">The exact setup</h2>
         <p class="mt-3 text-forest/80">
           For anyone who wants to reproduce this, here is precisely what was tested and how.
@@ -972,7 +972,7 @@ const techStack = [
       </div>
 
       <!-- Limitations & next steps -->
-      <div class="mt-16">
+      <div class="mt-8">
         <h2 id="limitations" class="scroll-mt-24 font-serif text-3xl font-semibold text-forest">Honest limitations</h2>
         <p class="mt-3 text-forest/80">
           A trustworthy report says what it cannot yet claim. These are the open trade-offs.
@@ -990,7 +990,7 @@ const techStack = [
       </div>
 
       <!-- Takeaway -->
-      <div class="mt-16 rounded-3xl bg-forest p-8 text-cream sm:p-10">
+      <div class="mt-8 rounded-3xl bg-forest p-6 text-cream sm:p-8">
         <h2 id="takeaway" class="scroll-mt-24 font-serif text-3xl font-semibold">The takeaway</h2>
         <p class="mt-4 leading-relaxed text-cream/85">
           Of the 13 problems we fixed, only a couple were genuine app bugs. The rest were
