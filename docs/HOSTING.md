@@ -126,20 +126,27 @@ You're keeping this separate from your personal GitHub on purpose — easier bra
 
 ## Phase 3b · Engineering write-up at `tech.zikrapps.com` (5 min)
 
-The repo ships a long-form engineering page at `/tech` (Misbaha QA reliability write-up, promo video, GitHub link). Astro middleware rewrites the bare subdomain root to that route, so `https://tech.zikrapps.com/` serves the same content as `/tech`.
+The repo ships a long-form engineering page at `/tech` (Misbaha QA reliability write-up, promo video, GitHub link). `src/worker-entry.ts` rewrites the bare subdomain root to that route, so `https://tech.zikrapps.com/` serves the same content as `/tech`.
 
-> **A GitHub push alone is not enough for the subdomain.** Code deploys automatically, but `tech.zikrapps.com` is a new hostname and must be attached in Cloudflare once.
+> **Important:** If you deploy as a **Worker** (via `wrangler deploy` or the Workers dashboard), **every hostname must be listed under Custom domains** — not just the tech subdomain. Adding only `tech.zikrapps.com` leaves `zikrapps.com` returning Cloudflare **530 / error 1016** (hostname reaches Cloudflare but is not bound to your Worker).
 
-1. **Push to `main`.** Cloudflare Pages redeploys the page, middleware, and assets (`src/pages/tech.astro`, `src/middleware.ts`, `public/videos/misbaha-promo-75s.*`).
-2. **Add the custom domain (one-time):**
-   - **Workers & Pages** → your **zikrapps** project → **Custom domains** → **Set up a custom domain**
-   - Enter `tech.zikrapps.com`
-   - Cloudflare creates the DNS record and provisions HTTPS automatically (the zone is already on this account). No manual DNS entry is usually needed.
-3. **Verify:**
-   - `https://zikrapps.com/tech` — should work after step 1 (preview path; no subdomain setup required)
-   - `https://tech.zikrapps.com/` — should show the write-up after step 2 (middleware rewrite)
+1. **Push to `main`.** Cloudflare redeploys the page, middleware, and assets. The build runs `scripts/wrap-worker-entry.mjs`, which generates `dist/server/worker-entry.mjs` — your Cloudflare Worker deploy must use that file as its entry point (see below).
+2. **Confirm all custom domains on the same project** (Worker *or* Pages — pick one, do not split hostnames across two projects):
+   - **Workers & Pages** → **zikrapps** → **Custom domains**
+   - You should see **all three**:
+     - `zikrapps.com`
+     - `www.zikrapps.com`
+     - `tech.zikrapps.com`
+   - If `zikrapps.com` or `www` is missing, click **Add domain** and add it. Cloudflare creates DNS + HTTPS automatically when the zone is on this account.
+3. **Verify in the browser:**
+   - `https://zikrapps.com/` — main site
+   - `https://www.zikrapps.com/` — should load (add a redirect to apex if you prefer)
+   - `https://zikrapps.com/tech` — write-up path on the main domain
+   - `https://tech.zikrapps.com/` — write-up at the subdomain root (via `dist/server/worker-entry.mjs`)
 
-`wrangler.jsonc` also declares a `tech.zikrapps.com` route for `npm run deploy` (`wrangler deploy`). If you deploy via **Pages + Git** (the default in this runbook), treat the **Custom domains** step above as the source of truth — do not rely on the wrangler route alone.
+The post-build wrapper rewrites `tech.zikrapps.com/` to `/tech` **before** Cloudflare serves the prerendered home page (`/index.html`). Astro middleware cannot do this alone because static assets short-circuit the Worker handler.
+
+**Worker deploy entry point:** after `npm run build`, the real entry is `./dist/server/worker-entry.mjs` (not `@astrojs/cloudflare/entrypoints/server`). Local deploys use `npm run deploy`. If your Cloudflare GitHub integration deploys with Wrangler, point it at `wrangler.deploy.jsonc` (or run `npx wrangler deploy -c wrangler.deploy.jsonc` after `npm run build`).
 
 Before pushing changes that touch routing or env fallbacks, run `npm test` locally (Vitest suite under `tests/`).
 

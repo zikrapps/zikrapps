@@ -6,3 +6,12 @@ export function techSubdomainRewrite(hostname: string, pathname: string): '/tech
   if (pathname === '/' || pathname === '') return '/tech';
   return null;
 }
+
+/** Rewrites tech subdomain root requests before Astro serves prerendered /index.html. */
+export function applyTechSubdomainRequest(request: Request): Request {
+  const url = new URL(request.url);
+  const rewritePath = techSubdomainRewrite(url.hostname, url.pathname);
+  if (!rewritePath) return request;
+  url.pathname = rewritePath;
+  return new Request(url, request);
+}

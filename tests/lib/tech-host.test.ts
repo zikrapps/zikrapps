@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { TECH_SUBDOMAIN, techSubdomainRewrite } from '../../src/lib/tech-host';
+import { TECH_SUBDOMAIN, applyTechSubdomainRequest, techSubdomainRewrite } from '../../src/lib/tech-host';
 
 describe('tech-host', () => {
   it('rewrites the tech subdomain root to /tech', () => {
@@ -12,5 +12,13 @@ describe('tech-host', () => {
     expect(techSubdomainRewrite('zikrapps.com', '/')).toBeNull();
     expect(techSubdomainRewrite(TECH_SUBDOMAIN, '/tech')).toBeNull();
     expect(techSubdomainRewrite(TECH_SUBDOMAIN, '/privacy')).toBeNull();
+  });
+
+  it('rewrites tech subdomain requests before Astro handles them', () => {
+    const rewritten = applyTechSubdomainRequest(new Request('https://tech.zikrapps.com/'));
+    expect(new URL(rewritten.url).pathname).toBe('/tech');
+
+    const unchanged = applyTechSubdomainRequest(new Request('https://zikrapps.com/'));
+    expect(new URL(unchanged.url).pathname).toBe('/');
   });
 });

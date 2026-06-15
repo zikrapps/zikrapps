@@ -7,11 +7,11 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
-    "preview": "npm run build && wrangler dev",
+    "build": "astro build && node scripts/wrap-worker-entry.mjs",
+    "preview": "npm run build && wrangler dev -c wrangler.deploy.jsonc",
     "astro": "astro",
     "generate-types": "wrangler types",
-    "deploy": "npm run build && wrangler deploy",
+    "deploy": "npm run build && wrangler deploy -c wrangler.deploy.jsonc",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
