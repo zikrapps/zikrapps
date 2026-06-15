@@ -445,6 +445,7 @@ const lastUpdated = 'June 2026';
 // Project intro assets + open-source + tech stack.
 const promoVideo = '/videos/misbaha-promo-75s.mp4';
 const promoPoster = '/videos/misbaha-promo-75s-poster.jpg';
+const promoCaptions = '/videos/misbaha-promo-75s.en.vtt';
 const repoUrl = 'https://github.com/zikrapps/misbaha';
 
 const appStoreUrl =
@@ -550,15 +551,22 @@ const techStack = [
       </div>
 
       <figure class="mt-8">
-        <div class="overflow-hidden rounded-3xl border border-forest/10 bg-forest/5 shadow-sm">
+        <div class="mx-auto w-full max-w-[320px] overflow-hidden rounded-[2.25rem] border border-forest/10 bg-black shadow-md">
           <video
-            class="aspect-video w-full bg-black"
+            class="aspect-[1080/2340] w-full bg-black"
             controls
             playsinline
             preload="metadata"
             poster={promoPoster}
           >
             <source src={promoVideo} type="video/mp4" />
+            <track
+              kind="captions"
+              src={promoCaptions}
+              srclang="en"
+              label="English"
+              default
+            />
             Your browser does not support embedded video.
           </video>
         </div>
