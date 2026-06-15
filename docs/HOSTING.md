@@ -144,9 +144,11 @@ The repo ships a long-form engineering page at `/tech` (Misbaha QA reliability w
    - `https://zikrapps.com/tech` — write-up path on the main domain
    - `https://tech.zikrapps.com/` — write-up at the subdomain root (via `dist/server/worker-entry.mjs`)
 
-The post-build wrapper rewrites `tech.zikrapps.com/` to `/tech` **before** Cloudflare serves the prerendered home page (`/index.html`). Astro middleware cannot do this alone because static assets short-circuit the Worker handler.
+The post-build wrapper serves `/tech/index.html` directly from assets when the host is `tech.zikrapps.com` and the path is `/`. Cloudflare can otherwise return the prerendered home page before Astro middleware runs. `assets.run_worker_first` is enabled so the Worker always executes first.
 
-**Worker deploy entry point:** after `npm run build`, the real entry is `./dist/server/worker-entry.mjs` (not `@astrojs/cloudflare/entrypoints/server`). Local deploys use `npm run deploy`. If your Cloudflare GitHub integration deploys with Wrangler, point it at `wrangler.deploy.jsonc` (or run `npx wrangler deploy -c wrangler.deploy.jsonc` after `npm run build`).
+**Worker deploy entry point:** after `npm run build`, the real entry is `./dist/server/worker-entry.mjs`. Local deploys use `npm run deploy`. If your Cloudflare GitHub integration deploys with Wrangler, point it at `wrangler.deploy.jsonc`.
+
+After changing routing, purge cached HTML for `tech.zikrapps.com` once in **Caching → Configuration → Purge Everything** (or Purge by URL for `https://tech.zikrapps.com/`).
 
 Before pushing changes that touch routing or env fallbacks, run `npm test` locally (Vitest suite under `tests/`).
 

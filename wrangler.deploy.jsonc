@@ -5,7 +5,8 @@
 	"main": "./dist/server/worker-entry.mjs",
 	"assets": {
 		"directory": "./dist/client",
-		"binding": "ASSETS"
+		"binding": "ASSETS",
+		"run_worker_first": true
 	},
 	"routes": [
 		{ "pattern": "zikrapps.com", "custom_domain": true },

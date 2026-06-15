@@ -10,17 +10,25 @@ writeFileSync(
 
 const TECH_SUBDOMAIN = 'tech.zikrapps.com';
 
-function applyTechSubdomainRequest(request) {
-  const url = new URL(request.url);
-  if (url.hostname.toLowerCase() !== TECH_SUBDOMAIN) return request;
-  if (url.pathname !== '/' && url.pathname !== '') return request;
-  url.pathname = '/tech';
-  return new Request(url, request);
+function isTechSubdomainRoot(url) {
+  return (
+    url.hostname.toLowerCase() === TECH_SUBDOMAIN &&
+    (url.pathname === '/' || url.pathname === '')
+  );
 }
 
 export default {
-  fetch(request, env, ctx) {
-    return astro.fetch(applyTechSubdomainRequest(request), env, ctx);
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+
+    // Serve the prerendered /tech page directly. Cloudflare can return /index.html
+    // for / before the Astro handler runs, so do not rely on middleware rewrite alone.
+    if (isTechSubdomainRoot(url)) {
+      url.pathname = '/tech/index.html';
+      return env.ASSETS.fetch(new Request(url, request));
+    }
+
+    return astro.fetch(request, env, ctx);
   },
 };
 `,
