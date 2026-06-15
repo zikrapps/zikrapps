@@ -88,7 +88,7 @@ const ur: Translations = {
       storeAvailability: 'اب iPhone اور iPad پر دستیاب ہے۔',
       storeAndroidNote:
         'Google Play جلد آ رہا ہے۔ اس وقت تک، نیچے APK ڈاؤن لوڈ سے اینڈرائیڈ بیٹا انسٹال کریں۔',
-      apkFilename: 'misbaha-1.1.0.apk',
+      apkFilename: 'misbaha-1.2.0.apk',
     },
     mehrab: {
       name: 'محراب',

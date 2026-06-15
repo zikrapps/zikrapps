@@ -88,7 +88,7 @@ const ar: Translations = {
       storeAvailability: 'متوفر الآن على iPhone و iPad.',
       storeAndroidNote:
         'Google Play قريباً. إلى ذلك الحين، ثبّت النسخة التجريبية لأندرويد عبر تنزيل APK أدناه.',
-      apkFilename: 'misbaha-1.1.0.apk',
+      apkFilename: 'misbaha-1.2.0.apk',
     },
     mehrab: {
       name: 'محراب',

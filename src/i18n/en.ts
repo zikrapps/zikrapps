@@ -88,7 +88,7 @@ const en: Translations = {
       storeAvailability: 'Available on iPhone and iPad now.',
       storeAndroidNote:
         'Google Play is coming soon. Until then, install the Android beta with the APK download below.',
-      apkFilename: 'misbaha-1.1.0.apk',
+      apkFilename: 'misbaha-1.2.0.apk',
     },
     mehrab: {
       name: 'Mehrab',
