@@ -1,6 +1,6 @@
 ---
 import type { Locale, Translations } from '../i18n';
-import { contactPath, copyrightPath, homePath, privacyPath } from '../lib/paths';
+import { contactPath, copyrightPath, homePath, privacyPath, techPath, withSiteOrigin } from '../lib/paths';
 import { INSTAGRAM_URL } from '../lib/social';
 import Instagram from './icons/Instagram.astro';
 import Logo from './icons/Logo.astro';
@@ -9,15 +9,17 @@ import Wordmark from './icons/Wordmark.astro';
 interface Props {
   locale: Locale;
   t: Translations;
+  linkOrigin?: string;
 }
 
-const { locale, t } = Astro.props;
+const { locale, t, linkOrigin } = Astro.props;
+const link = (path: string) => withSiteOrigin(path, linkOrigin);
 ---
 
 <footer class="relative overflow-hidden border-t border-forest/10 bg-forest text-cream">
   <div class="relative mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
     <div class="flex flex-col items-center gap-6 text-center md:flex-row md:justify-between md:text-start">
-      <a href={homePath(locale)} class="flex items-center gap-2.5">
+      <a href={link(homePath(locale))} class="flex items-center gap-2.5">
         <Logo class="h-10 w-auto" variant="reversed" />
         <Wordmark
           locale={locale}
@@ -42,25 +44,25 @@ const { locale, t } = Astro.props;
       </div>
       <div class="flex flex-wrap items-center justify-center gap-3 md:justify-end">
         <a
-          href={privacyPath(locale)}
+          href={link(privacyPath(locale))}
           class="rounded-full border border-cream/30 px-5 py-2 text-sm font-medium transition-colors hover:bg-cream/10"
         >
           {t.nav.privacy}
         </a>
         <a
-          href={copyrightPath(locale)}
+          href={link(copyrightPath(locale))}
           class="rounded-full border border-cream/30 px-5 py-2 text-sm font-medium transition-colors hover:bg-cream/10"
         >
           {t.nav.copyright}
         </a>
         <a
-          href={contactPath(locale)}
+          href={link(contactPath(locale))}
           class="rounded-full border border-cream/30 px-5 py-2 text-sm font-medium transition-colors hover:bg-cream/10"
         >
           {t.nav.contact}
         </a>
         <a
-          href="/tech"
+          href={link(techPath())}
           class="rounded-full border border-cream/30 px-5 py-2 text-sm font-medium transition-colors hover:bg-cream/10"
         >
           Tech

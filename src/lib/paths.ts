@@ -19,3 +19,13 @@ export function copyrightPath(locale: Locale): string {
 export function homePath(locale: Locale): string {
   return locale === 'en' ? '/' : `/${locale}`;
 }
+
+export function techPath(): string {
+  return '/tech';
+}
+
+/** Prefix a site-relative path with the main origin when viewing from the tech subdomain. */
+export function withSiteOrigin(path: string, siteOrigin?: string): string {
+  if (!siteOrigin) return path;
+  return new URL(path, siteOrigin).href;
+}

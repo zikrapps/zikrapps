@@ -5,10 +5,12 @@ import { switchLocalePath } from '../i18n';
 interface Props {
   locale: Locale;
   labels: { en: string; ar: string; ur: string };
+  linkOrigin?: string;
 }
 
-const { locale, labels } = Astro.props;
+const { locale, labels, linkOrigin } = Astro.props;
 const pathname = Astro.url.pathname;
+const link = (path: string) => (linkOrigin ? new URL(path, linkOrigin).href : path);
 
 const locales: { code: Locale; label: string; flag: string }[] = [
   {
@@ -32,7 +34,7 @@ const locales: { code: Locale; label: string; flag: string }[] = [
 <nav class="lang-toggle flex items-center gap-1 rounded-full border border-forest/10 bg-cream-dark/60 p-1" aria-label="Language">
   {
     locales.map(({ code, label, flag }) => {
-      const href = switchLocalePath(pathname, code);
+      const href = link(switchLocalePath(pathname, code));
       const active = locale === code;
       return (
         <a

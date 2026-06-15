@@ -3,7 +3,7 @@ import { APK_BASE_URL } from '../../src/lib/apk-base-url';
 import { FORM_ENDPOINT, isFormConfigured } from '../../src/lib/form-endpoint';
 import { INSTAGRAM_URL } from '../../src/lib/social';
 import { appStoreBadgeSrc } from '../../src/lib/store-badges';
-import { TECH_SUBDOMAIN, techSubdomainRewrite } from '../../src/lib/tech-host';
+import { techSubdomainRewrite } from '../../src/lib/tech-host';
 
 describe('lib module exports', () => {
   it('loads build-time configuration modules', () => {
@@ -15,6 +15,6 @@ describe('lib module exports', () => {
   it('loads static helpers used across the site', () => {
     expect(INSTAGRAM_URL).toContain('instagram.com');
     expect(appStoreBadgeSrc('en', 'light')).toContain('applemediaservices.com');
-    expect(techSubdomainRewrite(TECH_SUBDOMAIN, '/')).toBe('/tech');
+    expect(techSubdomainRewrite('tech.zikrapps.com', '/')).toBe('/tech');
   });
 });

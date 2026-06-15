@@ -5,6 +5,8 @@ import {
   copyrightPath,
   homePath,
   privacyPath,
+  techPath,
+  withSiteOrigin,
 } from '../../src/lib/paths';
 
 describe('paths', () => {
@@ -19,7 +21,7 @@ describe('paths', () => {
     expect(appPath('tazkirah', 'ur')).toBe('/ur/apps/tazkirah');
   });
 
-  it('builds contact, privacy, copyright, and home paths', () => {
+  it('builds contact, privacy, copyright, home, and tech paths', () => {
     expect(contactPath('en')).toBe('/contact');
     expect(contactPath('ar')).toBe('/ar/contact');
     expect(privacyPath('en')).toBe('/privacy');
@@ -28,5 +30,12 @@ describe('paths', () => {
     expect(copyrightPath('ur')).toBe('/ur/copyright');
     expect(homePath('en')).toBe('/');
     expect(homePath('ar')).toBe('/ar');
+    expect(techPath()).toBe('/tech');
+  });
+
+  it('prefixes paths with the main site origin when requested', () => {
+    expect(withSiteOrigin(homePath('en'), 'https://zikrapps.com')).toBe('https://zikrapps.com/');
+    expect(withSiteOrigin(techPath(), 'https://zikrapps.com')).toBe('https://zikrapps.com/tech');
+    expect(withSiteOrigin('/contact', undefined)).toBe('/contact');
   });
 });

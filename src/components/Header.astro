@@ -1,6 +1,6 @@
 ---
 import type { Locale, Translations } from '../i18n';
-import { appPath, contactPath, homePath } from '../lib/paths';
+import { appPath, contactPath, homePath, withSiteOrigin } from '../lib/paths';
 import LanguageToggle from './LanguageToggle.astro';
 import Logo from './icons/Logo.astro';
 import Wordmark from './icons/Wordmark.astro';
@@ -9,9 +9,11 @@ interface Props {
   locale: Locale;
   t: Translations;
   transparent?: boolean;
+  linkOrigin?: string;
 }
 
-const { locale, t, transparent = false } = Astro.props;
+const { locale, t, transparent = false, linkOrigin } = Astro.props;
+const link = (path: string) => withSiteOrigin(path, linkOrigin);
 const apps = [
   { slug: 'tazkirah' as const, label: t.nav.tazkirah },
   { slug: 'misbaha' as const, label: t.nav.misbaha },
@@ -26,7 +28,7 @@ const apps = [
   ]}
 >
   <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-    <a href={homePath(locale)} class="flex items-center gap-2.5 text-forest transition-opacity hover:opacity-80">
+    <a href={link(homePath(locale))} class="flex items-center gap-2.5 text-forest transition-opacity hover:opacity-80">
       <Logo class="h-9 w-auto" variant="primary" />
       <Wordmark locale={locale} brand={t.nav.brand} size="md" />
     </a>
@@ -35,7 +37,7 @@ const apps = [
       {
         apps.map((app) => (
           <a
-            href={appPath(app.slug, locale)}
+            href={link(appPath(app.slug, locale))}
             class="text-sm font-medium text-forest/80 transition-colors hover:text-forest"
           >
             {app.label}
@@ -43,7 +45,7 @@ const apps = [
         ))
       }
       <a
-        href={contactPath(locale)}
+        href={link(contactPath(locale))}
         class="text-sm font-medium text-forest/80 transition-colors hover:text-forest"
       >
         {t.nav.contact}
@@ -51,7 +53,7 @@ const apps = [
     </nav>
 
     <div class="flex items-center gap-3">
-      <LanguageToggle locale={locale} labels={t.lang} />
+      <LanguageToggle locale={locale} labels={t.lang} linkOrigin={linkOrigin} />
       <button
         type="button"
         class="mobile-menu-btn flex h-10 w-10 items-center justify-center rounded-lg border border-forest/10 text-forest md:hidden"
@@ -76,14 +78,14 @@ const apps = [
       {
         apps.map((app) => (
           <li>
-            <a href={appPath(app.slug, locale)} class="block py-1 font-medium text-forest">
+            <a href={link(appPath(app.slug, locale))} class="block py-1 font-medium text-forest">
               {app.label}
             </a>
           </li>
         ))
       }
       <li>
-        <a href={contactPath(locale)} class="block py-1 font-medium text-forest">
+        <a href={link(contactPath(locale))} class="block py-1 font-medium text-forest">
           {t.nav.contact}
         </a>
       </li>

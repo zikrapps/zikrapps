@@ -126,7 +126,7 @@ You're keeping this separate from your personal GitHub on purpose — easier bra
 
 ## Phase 3b · Engineering write-up at `tech.zikrapps.com` (5 min)
 
-The repo ships a long-form engineering page at `/tech` (Misbaha QA reliability write-up, promo video, GitHub link). `src/worker-entry.ts` rewrites the bare subdomain root to that route, so `https://tech.zikrapps.com/` serves the same content as `/tech`.
+The repo ships a long-form engineering page at `/tech` (Misbaha QA reliability write-up, promo video, GitHub link). Only `https://tech.zikrapps.com/` serves that page; every other path on the tech subdomain redirects to the same path on `https://zikrapps.com`. The tech page header/footer links always point at the main site.
 
 > **Important:** If you deploy as a **Worker** (via `wrangler deploy` or the Workers dashboard), **every hostname must be listed under Custom domains** — not just the tech subdomain. Adding only `tech.zikrapps.com` leaves `zikrapps.com` returning Cloudflare **530 / error 1016** (hostname reaches Cloudflare but is not bound to your Worker).
 
@@ -142,7 +142,9 @@ The repo ships a long-form engineering page at `/tech` (Misbaha QA reliability w
    - `https://zikrapps.com/` — main site
    - `https://www.zikrapps.com/` — should load (add a redirect to apex if you prefer)
    - `https://zikrapps.com/tech` — write-up path on the main domain
-   - `https://tech.zikrapps.com/` — write-up at the subdomain root (via `dist/server/worker-entry.mjs`)
+   - `https://tech.zikrapps.com/` — write-up at the subdomain root only
+   - `https://tech.zikrapps.com/apps/...` — redirects to `https://zikrapps.com/apps/...`
+   - `https://zikrapps.com/tech` — same write-up on the main domain (footer **Tech** link)
 
 The post-build wrapper serves `/tech/index.html` directly from assets when the host is `tech.zikrapps.com` and the path is `/`. Cloudflare can otherwise return the prerendered home page before Astro middleware runs. `assets.run_worker_first` is enabled so the Worker always executes first.
 

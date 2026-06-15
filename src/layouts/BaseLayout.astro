@@ -10,9 +10,11 @@ interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
+  /** When set, header/footer links use this origin (e.g. on the tech subdomain). */
+  linkOrigin?: string;
 }
 
-const { locale, t, title, description, noindex } = Astro.props;
+const { locale, t, title, description, noindex, linkOrigin } = Astro.props;
 const pageTitle = title ? `${title} · ${t.meta.siteTitle}` : t.meta.siteTitle;
 const pageDescription = description ?? t.meta.siteDescription;
 const dir = locale === 'en' ? 'ltr' : 'rtl';
@@ -43,10 +45,10 @@ const lang = locale === 'ur' ? 'ur' : locale === 'ar' ? 'ar' : 'en';
     <title>{pageTitle}</title>
   </head>
   <body class="min-h-screen flex flex-col">
-    <Header locale={locale} t={t} />
+    <Header locale={locale} t={t} linkOrigin={linkOrigin} />
     <main class="flex-1">
       <slot />
     </main>
-    <Footer locale={locale} t={t} />
+    <Footer locale={locale} t={t} linkOrigin={linkOrigin} />
   </body>
 </html>
