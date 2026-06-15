@@ -8,6 +8,11 @@
 		"binding": "ASSETS",
 		"run_worker_first": true
 	},
+	// Bind the existing KV namespace by id so wrangler reuses it instead of
+	// trying to auto-provision a new "zikrapps-session" namespace on each deploy.
+	"kv_namespaces": [
+		{ "binding": "SESSION", "id": "356801e9377142b6b6726bfd3456ef0b" }
+	],
 	"routes": [
 		{ "pattern": "zikrapps.com", "custom_domain": true },
 		{ "pattern": "www.zikrapps.com", "custom_domain": true },
